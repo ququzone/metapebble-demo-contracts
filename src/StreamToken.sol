@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: UNLICENSED
+// SPDX-License-Identifier: MIT
 pragma solidity ^0.8.13;
 
 import "openzeppelin-contracts/contracts/access/Ownable.sol";
@@ -61,7 +61,10 @@ contract StreamToken is Ownable, ReentrancyGuard, ERC20 {
     }
 
     function _claim(address user_, uint256 date_, uint256 value_, uint8 v_, bytes32 r_, bytes32 s_) internal {
-        require(date_ % CLAIM_PERIOD == 0, "invalid date");
+        require(
+            block.timestamp - date_ < CLAIM_PERIOD && date_ % CLAIM_PERIOD == 0,
+            "invalid date"
+        );
         require(!_claimed[user_][date_], "already claimed");
         bytes32 digest = keccak256(abi.encodePacked(
             "\x19\x01",

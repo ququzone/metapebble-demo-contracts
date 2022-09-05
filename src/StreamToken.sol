@@ -73,6 +73,7 @@ contract StreamToken is Ownable, ReentrancyGuard, ERC20 {
         ));
         require(ecrecover(digest, v_, r_, s_) == validator, "invalid signature");
 
+        _claimed[user_][date_] = true;
         _mint(user_, value_);
         emit Claimed(user_, date_, value_);
     }

@@ -27,7 +27,7 @@ contract StreamTokenTest is Test {
         token = new StreamToken(validator);
     }
 
-    function testCurrentPeriod() public {
+    function test_currentPeriod() public {
         vm.warp(1662249600);
         assertEq(token.currentPeriod(), 1662249600);
 
@@ -36,7 +36,7 @@ contract StreamTokenTest is Test {
         assertEq(token.currentPeriod(), 1662249600);
     }
 
-    function testChangeValidator() public {
+    function test_changeValidator() public {
         assertEq(token.validator(), validator);
         vm.expectEmit(true, true, false, true);
         emit ValidatorChanged(validator, address(0));
@@ -48,7 +48,7 @@ contract StreamTokenTest is Test {
         token.changeValidator(address(0));
     }
 
-    function testClaim() public {
+    function test_claim() public {
         bytes32 digest = getDigest(token, address(1), 1662249600, 10000);
 
         // sign digest
@@ -65,6 +65,95 @@ contract StreamTokenTest is Test {
             s
         );
 
+        assertEq(token.balanceOf(address(1)), 10000);
+    }
+
+    function testFail_claim_errorSignature() public {
+        bytes32 digest = getDigest(token, address(1), 1662249600, 10000);
+
+        // sign digest
+        (uint8 v, bytes32 r, bytes32 s) = vm.sign(0xB0B, digest);
+
+        vm.warp(1662297981);
+        assertEq(token.balanceOf(address(1)), 0);
+        token.claim(
+            address(1),
+            1662249600,
+            10000,
+            v,
+            r,
+            s
+        );
+
+        assertEq(token.balanceOf(address(1)), 10000);
+    }
+
+    function testRevert_claim_expiredDate() public {
+        bytes32 digest = getDigest(token, address(1), 166138560, 10000);
+
+        // sign digest
+        (uint8 v, bytes32 r, bytes32 s) = vm.sign(validatorPrivateKey, digest);
+
+        vm.warp(1662297981);
+        assertEq(token.balanceOf(address(1)), 0);
+
+        vm.expectRevert(bytes("invalid date"));
+        token.claim(
+            address(1),
+            166138560,
+            10000,
+            v,
+            r,
+            s
+        );
+    }
+
+    function testFail_claim_futureDate() public {
+        bytes32 digest = getDigest(token, address(1), 166138560, 10000);
+
+        // sign digest
+        (uint8 v, bytes32 r, bytes32 s) = vm.sign(validatorPrivateKey, digest);
+
+        assertEq(token.balanceOf(address(1)), 0);
+
+        token.claim(
+            address(1),
+            166138560,
+            10000,
+            v,
+            r,
+            s
+        );
+    }
+
+    function testRevert_claim_repeatClaim() public {
+        bytes32 digest = getDigest(token, address(1), 1662249600, 10000);
+
+        // sign digest
+        (uint8 v, bytes32 r, bytes32 s) = vm.sign(validatorPrivateKey, digest);
+
+        vm.warp(1662297981);
+        assertEq(token.balanceOf(address(1)), 0);
+
+        token.claim(
+            address(1),
+            1662249600,
+            10000,
+            v,
+            r,
+            s
+        );
+        assertEq(token.balanceOf(address(1)), 10000);
+
+        vm.expectRevert(bytes("already claimed"));
+        token.claim(
+            address(1),
+            1662249600,
+            10000,
+            v,
+            r,
+            s
+        );
         assertEq(token.balanceOf(address(1)), 10000);
     }
 }

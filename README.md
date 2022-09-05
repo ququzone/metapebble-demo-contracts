@@ -1,7 +1,7 @@
 metapebble demo contracts
 =========================
 
-## calculate signature
+## Calculate signature
 
 ```
 // cast keccak "Claim(address user,uint256 date,uint256 value)"
@@ -17,4 +17,22 @@ const digest = "0x94ae32fd86658bde3e7a172aec0b200189c5dbb101e853528d292b4d005486
 
 // sign digest
 // use secp256k1 sign
+```
+
+
+## Develop
+
+```
+forge build
+forge test -vvv -w
+// unworking need to investigate
+forge script script/StreamToken.s.sol:Deploy \
+    --rpc-url=$ETH_RPC_URL \
+    --private-key $PRIVATE_KEY \
+    --broadcast --legacy -vvvv
+
+forge create --rpc-url $ETH_RPC_URL \
+    --constructor-args "0x31aC7b9Efef929d44F432d51C00bE13F206b85e8" \
+    --private-key $PRIVATE_KEY --legacy \
+    src/StreamToken.sol:StreamToken
 ```

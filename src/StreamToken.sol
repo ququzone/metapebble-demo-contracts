@@ -12,7 +12,7 @@ contract StreamToken is Ownable, ReentrancyGuard, ERC20 {
     bytes32 public constant EIP712DOMAIN_TYPEHASH = keccak256(
         "EIP712Domain(string name,string version,uint256 chainId,address verifyingContract)"
     );
-    bytes32 public DOMAIN_SEPARATOR;
+    bytes32 public immutable DOMAIN_SEPARATOR;
     bytes32 internal constant CLAIM_TYPE_HASH = keccak256(
         "Claim(address user,uint256 date,uint256 value)"
     );

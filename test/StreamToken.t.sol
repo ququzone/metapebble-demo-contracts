@@ -27,6 +27,11 @@ contract StreamTokenTest is Test {
         token = new StreamToken(validator);
     }
 
+    function invariant_metadata() public {
+        assertEq(token.name(), "Metapebble Demo Stream Token");
+        assertEq(token.symbol(), "MDST");
+    }
+
     function test_currentPeriod() public {
         vm.warp(1662249600);
         assertEq(token.currentPeriod(), 1662249600);

@@ -65,7 +65,6 @@ contract StreamToken is Ownable, ReentrancyGuard, ERC20 {
     }
 
     function _claim(address user_, uint256 date_, uint256 value_, uint8 v_, bytes32 r_, bytes32 s_) internal {
-        require(value_ > 0, "invalid value");
         require(
             block.timestamp - date_ < CLAIM_PERIOD && date_ % CLAIM_PERIOD == 0,
             "invalid date"

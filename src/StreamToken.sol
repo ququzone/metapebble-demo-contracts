@@ -70,7 +70,8 @@ contract StreamToken is Ownable, ReentrancyGuard, ERC20 {
             block.timestamp - date_ < CLAIM_PERIOD && date_ % CLAIM_PERIOD == 0,
             "invalid date"
         );
-        require(_claimed[user_][date_] == 0, "already claimed");
+        uint256 claimedAmount = _claimed[user_][date_];
+        require(claimedAmount < value_, "already claimed");
         bytes32 digest = keccak256(abi.encodePacked(
             "\x19\x01",
             DOMAIN_SEPARATOR,
@@ -79,8 +80,8 @@ contract StreamToken is Ownable, ReentrancyGuard, ERC20 {
         require(ecrecover(digest, v_, r_, s_) == validator, "invalid signature");
 
         _claimed[user_][date_] = value_;
-        _mint(user_, value_);
-        emit Claimed(user_, date_, value_);
+        _mint(user_, value_ - claimedAmount);
+        emit Claimed(user_, date_, value_ - claimedAmount);
     }
 
     function claim(address user_, uint256 date_, uint256 value_, uint8 v_, bytes32 r_, bytes32 s_) external nonReentrant {

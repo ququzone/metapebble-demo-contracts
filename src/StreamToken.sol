@@ -18,8 +18,8 @@ contract StreamToken is Ownable, ReentrancyGuard, ERC20 {
     );
 
     address public validator;
-    // pebble user => date => user claimed
-    mapping(address => mapping(uint256 => bool)) private _claimed;
+    // pebble user => date => user claimed amount
+    mapping(address => mapping(uint256 => uint256)) private _claimed;
 
     event ValidatorChanged(address indexed previousValidator, address indexed validator);
     event Claimed(address indexed user, uint256 indexed date, uint256 value);
@@ -49,6 +49,10 @@ contract StreamToken is Ownable, ReentrancyGuard, ERC20 {
         return block.timestamp / CLAIM_PERIOD * CLAIM_PERIOD;
     }
 
+    function claimedAmount(address user_, uint256 date_) external view returns (uint256) {
+        return _claimed[user_][date_];
+    }
+
     function hashClaim(address user_, uint256 date_, uint256 value_) public pure returns (bytes32) {
         return keccak256(
             abi.encode(
@@ -61,11 +65,12 @@ contract StreamToken is Ownable, ReentrancyGuard, ERC20 {
     }
 
     function _claim(address user_, uint256 date_, uint256 value_, uint8 v_, bytes32 r_, bytes32 s_) internal {
+        require(value_ > 0, "invalid value");
         require(
             block.timestamp - date_ < CLAIM_PERIOD && date_ % CLAIM_PERIOD == 0,
             "invalid date"
         );
-        require(!_claimed[user_][date_], "already claimed");
+        require(_claimed[user_][date_] == 0, "already claimed");
         bytes32 digest = keccak256(abi.encodePacked(
             "\x19\x01",
             DOMAIN_SEPARATOR,
@@ -73,7 +78,7 @@ contract StreamToken is Ownable, ReentrancyGuard, ERC20 {
         ));
         require(ecrecover(digest, v_, r_, s_) == validator, "invalid signature");
 
-        _claimed[user_][date_] = true;
+        _claimed[user_][date_] = value_;
         _mint(user_, value_);
         emit Claimed(user_, date_, value_);
     }

@@ -6,6 +6,7 @@ import "../src/StreamToken.sol";
 
 contract StreamTokenTest is Test {
     event ValidatorChanged(address indexed previousValidator, address indexed validator);
+    event Claimed(address indexed user, uint256 indexed date, uint256 value);
 
     uint256 internal validatorPrivateKey;
     address internal validator;
@@ -160,5 +161,78 @@ contract StreamTokenTest is Test {
             s
         );
         assertEq(token.balanceOf(address(1)), 10000);
+    }
+
+    function testRevert_claim_lessAmountClaim() public {
+        bytes32 digest = getDigest(token, address(1), 1662249600, 10000);
+
+        // sign digest
+        (uint8 v, bytes32 r, bytes32 s) = vm.sign(validatorPrivateKey, digest);
+
+        vm.warp(1662297981);
+        assertEq(token.balanceOf(address(1)), 0);
+
+        token.claim(
+            address(1),
+            1662249600,
+            10000,
+            v,
+            r,
+            s
+        );
+        assertEq(token.balanceOf(address(1)), 10000);
+
+        bytes32 digest2 = getDigest(token, address(1), 1662249600, 9000);
+        // sign digest
+        (uint8 v2, bytes32 r2, bytes32 s2) = vm.sign(validatorPrivateKey, digest2);
+
+        vm.expectRevert(bytes("already claimed"));
+        token.claim(
+            address(1),
+            1662249600,
+            9000,
+            v2,
+            r2,
+            s2
+        );
+        assertEq(token.balanceOf(address(1)), 10000);
+    }
+
+    function test_claim_twiceClaim() public {
+        bytes32 digest = getDigest(token, address(1), 1662249600, 10000);
+
+        // sign digest
+        (uint8 v, bytes32 r, bytes32 s) = vm.sign(validatorPrivateKey, digest);
+
+        vm.warp(1662297981);
+        assertEq(token.balanceOf(address(1)), 0);
+
+        vm.expectEmit(true, true, false, true);
+        emit Claimed(address(1), 1662249600, 10000);
+        token.claim(
+            address(1),
+            1662249600,
+            10000,
+            v,
+            r,
+            s
+        );
+        assertEq(token.balanceOf(address(1)), 10000);
+
+        bytes32 digest2 = getDigest(token, address(1), 1662249600, 19000);
+        // sign digest
+        (uint8 v2, bytes32 r2, bytes32 s2) = vm.sign(validatorPrivateKey, digest2);
+
+        vm.expectEmit(true, true, false, true);
+        emit Claimed(address(1), 1662249600, 9000);
+        token.claim(
+            address(1),
+            1662249600,
+            19000,
+            v2,
+            r2,
+            s2
+        );
+        assertEq(token.balanceOf(address(1)), 19000);
     }
 }

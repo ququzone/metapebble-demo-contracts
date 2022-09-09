@@ -49,8 +49,12 @@ contract StreamToken is Ownable, ReentrancyGuard, ERC20 {
         return block.timestamp / CLAIM_PERIOD * CLAIM_PERIOD;
     }
 
+    function claimedAmount(address user_, uint256 date_) public view returns (uint256) {
+        return _claimed[user_][date_];
+    }
+
     function claimedAmount(address user_) external view returns (uint256) {
-        return _claimed[user_][currentPeriod()];
+        return claimedAmount(user_, currentPeriod());
     }
 
     function hashClaim(address user_, uint256 date_, uint256 value_) public pure returns (bytes32) {

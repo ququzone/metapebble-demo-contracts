@@ -45,12 +45,12 @@ contract StreamToken is Ownable, ReentrancyGuard, ERC20 {
         emit ValidatorChanged(previous, validator);
     }
 
-    function currentPeriod() external view returns (uint256) {
+    function currentPeriod() public view returns (uint256) {
         return block.timestamp / CLAIM_PERIOD * CLAIM_PERIOD;
     }
 
-    function claimedAmount(address user_, uint256 date_) external view returns (uint256) {
-        return _claimed[user_][date_];
+    function claimedAmount(address user_) external view returns (uint256) {
+        return _claimed[user_][currentPeriod()];
     }
 
     function hashClaim(address user_, uint256 date_, uint256 value_) public pure returns (bytes32) {
@@ -64,30 +64,27 @@ contract StreamToken is Ownable, ReentrancyGuard, ERC20 {
         );
     }
 
-    function _claim(address user_, uint256 date_, uint256 value_, uint8 v_, bytes32 r_, bytes32 s_) internal {
-        require(
-            block.timestamp - date_ < CLAIM_PERIOD && date_ % CLAIM_PERIOD == 0,
-            "invalid date"
-        );
-        uint256 claimedAmount = _claimed[user_][date_];
+    function _claim(address user_, uint256 value_, uint8 v_, bytes32 r_, bytes32 s_) internal {
+        uint256 _date = currentPeriod();
+        uint256 claimedAmount = _claimed[user_][_date];
         require(claimedAmount < value_, "already claimed");
         bytes32 digest = keccak256(abi.encodePacked(
             "\x19\x01",
             DOMAIN_SEPARATOR,
-            hashClaim(user_, date_, value_)
+            hashClaim(user_, _date, value_)
         ));
         require(ecrecover(digest, v_, r_, s_) == validator, "invalid signature");
 
-        _claimed[user_][date_] = value_;
+        _claimed[user_][_date] = value_;
         _mint(user_, value_ - claimedAmount);
-        emit Claimed(user_, date_, value_ - claimedAmount);
+        emit Claimed(user_, _date, value_ - claimedAmount);
     }
 
-    function claim(address user_, uint256 date_, uint256 value_, uint8 v_, bytes32 r_, bytes32 s_) external nonReentrant {
-        _claim(user_, date_, value_, v_, r_, s_);
+    function claim(address user_, uint256 value_, uint8 v_, bytes32 r_, bytes32 s_) external nonReentrant {
+        _claim(user_, value_, v_, r_, s_);
     }
 
-    function claim(uint256 date_, uint256 value_, uint8 v_, bytes32 r_, bytes32 s_) external nonReentrant {
-        _claim(msg.sender, date_, value_, v_, r_, s_);
+    function claim(uint256 value_, uint8 v_, bytes32 r_, bytes32 s_) external nonReentrant {
+        _claim(msg.sender, value_, v_, r_, s_);
     }
 }

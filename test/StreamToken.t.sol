@@ -64,7 +64,6 @@ contract StreamTokenTest is Test {
         assertEq(token.balanceOf(address(1)), 0);
         token.claim(
             address(1),
-            1662249600,
             10000,
             v,
             r,
@@ -84,7 +83,6 @@ contract StreamTokenTest is Test {
         assertEq(token.balanceOf(address(1)), 0);
         token.claim(
             address(1),
-            1662249600,
             10000,
             v,
             r,
@@ -92,26 +90,6 @@ contract StreamTokenTest is Test {
         );
 
         assertEq(token.balanceOf(address(1)), 10000);
-    }
-
-    function testRevert_claim_expiredDate() public {
-        bytes32 digest = getDigest(token, address(1), 166138560, 10000);
-
-        // sign digest
-        (uint8 v, bytes32 r, bytes32 s) = vm.sign(validatorPrivateKey, digest);
-
-        vm.warp(1662297981);
-        assertEq(token.balanceOf(address(1)), 0);
-
-        vm.expectRevert(bytes("invalid date"));
-        token.claim(
-            address(1),
-            166138560,
-            10000,
-            v,
-            r,
-            s
-        );
     }
 
     function testFail_claim_futureDate() public {
@@ -124,7 +102,6 @@ contract StreamTokenTest is Test {
 
         token.claim(
             address(1),
-            166138560,
             10000,
             v,
             r,
@@ -143,7 +120,6 @@ contract StreamTokenTest is Test {
 
         token.claim(
             address(1),
-            1662249600,
             10000,
             v,
             r,
@@ -154,7 +130,6 @@ contract StreamTokenTest is Test {
         vm.expectRevert(bytes("already claimed"));
         token.claim(
             address(1),
-            1662249600,
             10000,
             v,
             r,
@@ -174,7 +149,6 @@ contract StreamTokenTest is Test {
 
         token.claim(
             address(1),
-            1662249600,
             10000,
             v,
             r,
@@ -189,7 +163,6 @@ contract StreamTokenTest is Test {
         vm.expectRevert(bytes("already claimed"));
         token.claim(
             address(1),
-            1662249600,
             9000,
             v2,
             r2,
@@ -211,7 +184,6 @@ contract StreamTokenTest is Test {
         emit Claimed(address(1), 1662249600, 10000);
         token.claim(
             address(1),
-            1662249600,
             10000,
             v,
             r,
@@ -227,7 +199,6 @@ contract StreamTokenTest is Test {
         emit Claimed(address(1), 1662249600, 9000);
         token.claim(
             address(1),
-            1662249600,
             19000,
             v2,
             r2,

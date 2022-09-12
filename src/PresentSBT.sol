@@ -6,6 +6,8 @@ import "openzeppelin-contracts/contracts/security/ReentrancyGuard.sol";
 import "./sbt/SBT.sol";
 
 contract PresentSBT is ReentrancyGuard, Ownable, SBT {
+    event Attest(address indexed to, uint256 indexed tokenId);
+    event Revoke(address indexed from, uint256 indexed tokenId);
     event ValidatorChanged(address indexed previousValidator, address indexed validator);
     event Claimed(address indexed user);
 
@@ -13,7 +15,7 @@ contract PresentSBT is ReentrancyGuard, Ownable, SBT {
         "EIP712Domain(string name,string version,uint256 chainId,address verifyingContract)"
     );
     bytes32 public immutable DOMAIN_SEPARATOR;
-    bytes32 internal constant CLAIM_TYPE_HASH = keccak256(
+    bytes32 internal constant CLAIM_TYPEHASH = keccak256(
         "Claim(address user)"
     );
 
@@ -37,17 +39,23 @@ contract PresentSBT is ReentrancyGuard, Ownable, SBT {
         emit ValidatorChanged(address(0), validator);
     }
 
-    function attest(address) external override pure returns (uint256) {
-        revert("Present SBT only claimable");
+    function burn() external {
+        if (ERC721.balanceOf(msg.sender) > 0) {
+            uint256 tokenId = ERC721Enumerable.tokenOfOwnerByIndex(msg.sender, 0);
+            _burn(tokenId);
+        } else {
+            revert DoesNotOwn();
+        }
     }
 
-    function burn() external override {
-        uint256 tokenId = tokenIdOf(msg.sender);
-        _burn(tokenId);
-    }
-
-    function revoke(address from) external override onlyOwner {
-        _revoke(from);
+    function revoke(address from) external onlyOwner {
+        if (ERC721.balanceOf(msg.sender) > 0) {
+            uint256 tokenId = ERC721Enumerable.tokenOfOwnerByIndex(from, 0);
+            _burn(tokenId);
+            emit Revoke(from, tokenId);
+        } else {
+            revert DoesNotOwn();
+        }
     }
 
     function _baseURI() internal override view virtual returns (string memory) {
@@ -61,13 +69,14 @@ contract PresentSBT is ReentrancyGuard, Ownable, SBT {
     function hashClaim(address user_) public pure returns (bytes32) {
         return keccak256(
             abi.encode(
-                CLAIM_TYPE_HASH,
+                CLAIM_TYPEHASH,
                 user_
             )
         );
     }
 
     function _claim(address user_, uint8 v_, bytes32 r_, bytes32 s_) internal {
+        require(ERC721.balanceOf(user_) == 0, "already claimed");
         bytes32 digest = keccak256(abi.encodePacked(
             "\x19\x01",
             DOMAIN_SEPARATOR,
@@ -75,7 +84,8 @@ contract PresentSBT is ReentrancyGuard, Ownable, SBT {
         ));
         require(ecrecover(digest, v_, r_, s_) == validator, "invalid signature");
 
-        _attest(user_, _tokenId);
+        _mint(user_, _tokenId);
+        emit Attest(user_, _tokenId);
         _tokenId++;
     }
 

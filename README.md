@@ -31,8 +31,21 @@ forge script script/StreamToken.s.sol:Deploy \
     --private-key $PRIVATE_KEY \
     --broadcast --legacy -vvvv
 
+// deployed: 0xfe0DEED8041E7E69182Ff2ad49f1983f2554e3e8
 forge create --rpc-url $ETH_RPC_URL \
-    --constructor-args "0x31aC7b9Efef929d44F432d51C00bE13F206b85e8" \
+    --constructor-args "0x8896780a7912829781f70344ab93e589dddb2930" \
+    --private-key $PRIVATE_KEY --legacy \
+    src/MetapebbleDataVerifier.sol:MetapebbleDataVerifier
+
+// deployed: 0xD477bC2272e34fACf7F8E34cc442c28B7Ab7bd7F
+forge create --rpc-url $ETH_RPC_URL \
+    --constructor-args "0xfe0DEED8041E7E69182Ff2ad49f1983f2554e3e8" "Metapebble Demo Stream Token" "MDST" \
     --private-key $PRIVATE_KEY --legacy \
     src/StreamToken.sol:StreamToken
+
+// deployed: 0xe2365135a35702877d533780Ab89aEd9b45991a6
+forge create --rpc-url $ETH_RPC_URL \
+    --constructor-args "0xfe0DEED8041E7E69182Ff2ad49f1983f2554e3e8" "Metapebble SBT" "MSBT" \
+    --private-key $PRIVATE_KEY --legacy \
+    src/PresentSBT.sol:PresentSBT
 ```

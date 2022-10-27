@@ -4,6 +4,7 @@ pragma solidity ^0.8.0;
 import "openzeppelin-contracts/contracts/access/Ownable.sol";
 import "openzeppelin-contracts/contracts/token/ERC20/ERC20.sol";
 import "openzeppelin-contracts/contracts/security/ReentrancyGuard.sol";
+import "../src/MetapebbleDataVerifier.sol";
 
 contract StreamToken is Ownable, ReentrancyGuard, ERC20 {
     // one day
@@ -21,10 +22,11 @@ contract StreamToken is Ownable, ReentrancyGuard, ERC20 {
     // pebble user => date => user claimed amount
     mapping(address => mapping(uint256 => uint256)) private _claimed;
 
-    event ValidatorChanged(address indexed previousValidator, address indexed validator);
     event Claimed(address indexed user, uint256 indexed date, uint256 value);
 
-    constructor(address validator_) ERC20("Metapebble Demo Stream Token", "MDST") {
+    IMetapebbleDataVerifier public verifier;
+
+    constructor(address _verifier, string memory _name, string memory _symbol) ERC20(_name, _symbol) {
         DOMAIN_SEPARATOR = keccak256(
             abi.encode(
                 EIP712DOMAIN_TYPEHASH,
@@ -35,14 +37,7 @@ contract StreamToken is Ownable, ReentrancyGuard, ERC20 {
             )
         );
 
-        validator = validator_;
-        emit ValidatorChanged(address(0), validator);
-    }
-
-    function changeValidator(address validator_) external onlyOwner {
-        address previous = validator;
-        validator = validator_;
-        emit ValidatorChanged(previous, validator);
+        verifier = IMetapebbleDataVerifier(_verifier);
     }
 
     function currentPeriod() public view returns (uint256) {
@@ -70,18 +65,18 @@ contract StreamToken is Ownable, ReentrancyGuard, ERC20 {
 
     function _claim(address user_, uint256 value_, uint8 v_, bytes32 r_, bytes32 s_) internal {
         uint256 _date = currentPeriod();
-        uint256 claimedAmount = _claimed[user_][_date];
-        require(claimedAmount < value_, "already claimed");
+        uint256 _claimedAmount = _claimed[user_][_date];
+        require(_claimedAmount < value_, "already claimed");
         bytes32 digest = keccak256(abi.encodePacked(
             "\x19\x01",
             DOMAIN_SEPARATOR,
             hashClaim(user_, _date, value_)
         ));
-        require(ecrecover(digest, v_, r_, s_) == validator, "invalid signature");
+        require(verifier.valid(digest, v_, r_, s_), "invalid signature");
 
         _claimed[user_][_date] = value_;
-        _mint(user_, value_ - claimedAmount);
-        emit Claimed(user_, _date, value_ - claimedAmount);
+        _mint(user_, value_ - _claimedAmount);
+        emit Claimed(user_, _date, value_ - _claimedAmount);
     }
 
     function claim(address user_, uint256 value_, uint8 v_, bytes32 r_, bytes32 s_) external nonReentrant {

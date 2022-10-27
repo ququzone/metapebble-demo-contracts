@@ -2,6 +2,7 @@
 pragma solidity ^0.8.0;
 
 import "forge-std/Test.sol";
+import "../src/MetapebbleDataVerifier.sol";
 import "../src/StreamToken.sol";
 
 contract StreamTokenTest is Test {
@@ -25,7 +26,9 @@ contract StreamTokenTest is Test {
         validatorPrivateKey = 0xA11CE;
         validator = vm.addr(validatorPrivateKey);
 
-        token = new StreamToken(validator);
+        MetapebbleDataVerifier verifier = new MetapebbleDataVerifier(validator);
+
+        token = new StreamToken(address(verifier), "Metapebble Demo Stream Token", "MDST");
     }
 
     function invariant_metadata() public {
@@ -40,18 +43,6 @@ contract StreamTokenTest is Test {
         vm.warp(1662297981);
         emit log_named_uint("current period", token.currentPeriod());
         assertEq(token.currentPeriod(), 1662249600);
-    }
-
-    function test_changeValidator() public {
-        assertEq(token.validator(), validator);
-        vm.expectEmit(true, true, false, true);
-        emit ValidatorChanged(validator, address(0));
-        token.changeValidator(address(0));
-        assertEq(token.validator(), address(0));
-
-        vm.expectRevert(bytes("Ownable: caller is not the owner"));
-        vm.prank(address(1));
-        token.changeValidator(address(0));
     }
 
     function test_claim() public {

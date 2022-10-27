@@ -3,12 +3,12 @@ pragma solidity ^0.8.0;
 
 import "openzeppelin-contracts/contracts/access/Ownable.sol";
 import "openzeppelin-contracts/contracts/security/ReentrancyGuard.sol";
+import "./interface/IMetapebbleDataVerifier.sol";
 import "./sbt/SBT.sol";
 
 contract PresentSBT is ReentrancyGuard, Ownable, SBT {
     event Attest(address indexed to, uint256 indexed tokenId);
     event Revoke(address indexed from, uint256 indexed tokenId);
-    event ValidatorChanged(address indexed previousValidator, address indexed validator);
     event Claimed(address indexed user);
 
     bytes32 public constant EIP712DOMAIN_TYPEHASH = keccak256(
@@ -19,11 +19,11 @@ contract PresentSBT is ReentrancyGuard, Ownable, SBT {
         "Claim(address user)"
     );
 
-    address public validator;
+    IMetapebbleDataVerifier public verifier;
     uint256 private _tokenId;
     string private _uri;
 
-    constructor(address validator_) SBT("Metapebble Demo Present SBT", "MDPT") {
+    constructor(address _verifier, string memory _name, string memory _symbol) SBT(_name, _symbol) {
         DOMAIN_SEPARATOR = keccak256(
             abi.encode(
                 EIP712DOMAIN_TYPEHASH,
@@ -34,9 +34,8 @@ contract PresentSBT is ReentrancyGuard, Ownable, SBT {
             )
         );
 
-        validator = validator_;
+        verifier = IMetapebbleDataVerifier(_verifier);
         _uri = "";
-        emit ValidatorChanged(address(0), validator);
     }
 
     function burn() external {
@@ -82,7 +81,7 @@ contract PresentSBT is ReentrancyGuard, Ownable, SBT {
             DOMAIN_SEPARATOR,
             hashClaim(user_)
         ));
-        require(ecrecover(digest, v_, r_, s_) == validator, "invalid signature");
+        require(verifier.valid(digest, v_, r_, s_), "invalid signature");
 
         _mint(user_, _tokenId);
         emit Attest(user_, _tokenId);

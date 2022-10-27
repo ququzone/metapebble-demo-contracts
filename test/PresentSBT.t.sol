@@ -2,6 +2,7 @@
 pragma solidity ^0.8.0;
 
 import "forge-std/Test.sol";
+import "../src/MetapebbleDataVerifier.sol";
 import "../src/PresentSBT.sol";
 
 contract PresentSBTTest is Test {
@@ -14,7 +15,9 @@ contract PresentSBTTest is Test {
         validatorPrivateKey = 0xA11CE;
         validator = vm.addr(validatorPrivateKey);
 
-        token = new PresentSBT(validator);
+        MetapebbleDataVerifier verifier = new MetapebbleDataVerifier(validator);
+
+        token = new PresentSBT(address(verifier), "Mock SBT", "MSBT");
     }
 
     function getDigest(PresentSBT token_, address user_) public view returns (bytes32) {

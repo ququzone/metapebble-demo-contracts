@@ -12,7 +12,7 @@ contract PebbleNFT is ReentrancyGuard, Ownable, ERC721 {
     );
     bytes32 public immutable DOMAIN_SEPARATOR;
     bytes32 internal constant CLAIM_TYPEHASH = keccak256(
-        "Claim(address user,byte32 deviceHash)"
+        "Claim(address user,bytes32 deviceHash)"
     );
 
     IMetapebbleDataVerifier public verifier;

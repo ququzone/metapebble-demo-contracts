@@ -49,7 +49,7 @@ forge create --rpc-url $ETH_RPC_URL \
     --private-key $PRIVATE_KEY --legacy \
     src/PresentSBT.sol:PresentSBT
 
-// deployed: 0xB16d04B4BAc4574bf98b4c364F78E66Dc33232C7
+// deployed: 0x898EF2F18fB58039E58Ee748558baBFe7edF7845
 forge create --rpc-url $ETH_RPC_URL \
     --constructor-args "0xfe0DEED8041E7E69182Ff2ad49f1983f2554e3e8" "Metapebble NFT" "MNFT" \
     --private-key $PRIVATE_KEY --legacy \

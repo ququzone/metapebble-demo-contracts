@@ -1,12 +1,12 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-import "openzeppelin-contracts/contracts/access/Ownable.sol";
-import "openzeppelin-contracts/contracts/security/ReentrancyGuard.sol";
-import "openzeppelin-contracts/contracts/token/ERC721/ERC721.sol";
-import "./interface/IMetapebbleDataVerifier.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
+import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
+import "../interface/IMetapebbleDataVerifier.sol";
 
-contract PebbleNFT is ReentrancyGuard, Ownable, ERC721 {
+contract PebbleLocationNFT is ReentrancyGuard, Ownable, ERC721 {
     bytes32 public constant EIP712DOMAIN_TYPEHASH = keccak256(
         "EIP712Domain(string name,string version,uint256 chainId,address verifyingContract)"
     );

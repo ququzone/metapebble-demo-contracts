@@ -1,13 +1,15 @@
-# Compiler files
+abi/
+artifacts/
 cache/
-out/
-
-# Ignores development broadcast logs
-!/broadcast
-/broadcast/*
-/broadcast/*/31337/
-
-# Dotenv file
+coverage/
+exports/
+node_modules/
+typechain/
+package-lock.json
+coverage.json
 .env
-
-/node_modules
+.DS_Store
+/deployments/*/.chainId
+/deployments/*/solcInputs
+/.env
+/typechain

@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-import "openzeppelin-contracts/contracts/access/Ownable.sol";
-import "./interface/IMetapebbleDataVerifier.sol";
+import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
+import {IMetapebbleDataVerifier} from "./interface/IMetapebbleDataVerifier.sol";
 
 contract MetapebbleDataVerifier is Ownable, IMetapebbleDataVerifier {
     event ValidatorChanged(address indexed previousValidator, address indexed validator);

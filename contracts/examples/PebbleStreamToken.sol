@@ -72,7 +72,7 @@ contract StreamToken is Ownable, ReentrancyGuard, ERC20 {
             DOMAIN_SEPARATOR,
             hashClaim(user_, _date, value_)
         ));
-        require(verifier.valid(digest, v_, r_, s_), "invalid signature");
+        require(verifier.verify(digest, v_, r_, s_), "invalid signature");
 
         _claimed[user_][_date] = value_;
         _mint(user_, value_ - _claimedAmount);

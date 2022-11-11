@@ -54,6 +54,12 @@ const config: HardhatUserConfig = {
             saveDeployments: true,
             chainId: 1,
         },
+        iotex_test: {
+            url: 'https://babel-api.testnet.iotex.io',
+            accounts: accounts,
+            saveDeployments: true,
+            chainId: 4690,
+        }
     },
     gasReporter: {
         enabled: process.env.REPORT_GAS === "true",

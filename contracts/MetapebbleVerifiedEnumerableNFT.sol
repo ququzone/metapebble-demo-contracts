@@ -1,11 +1,11 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
 import "./interface/IMetapebbleDataVerifier.sol";
 
-abstract contract MetapebbleVerifiedToken is ERC20 {
-    event Claimed(address indexed holder, bytes32 indexed deviceHash, uint256 amount);
+abstract contract MetapebbleVerifiedEnumerableNFT is ERC721Enumerable {
+    event Claimed(address indexed holder, bytes32 indexed deviceHash, uint256 indexed tokenId);
 
     IMetapebbleDataVerifier public verifier;
 
@@ -13,17 +13,29 @@ abstract contract MetapebbleVerifiedToken is ERC20 {
         verifier = IMetapebbleDataVerifier(_verifier);
     }
 
+    // deviceHash => claimed address
+    mapping(bytes32 => address) internal _claimedDevices;
+
+    function claimed(bytes32 deviceHash_) external view returns (bool) {
+        return _claimedDevices[deviceHash_] != address(0);
+    }
+
+    function claimedUser(bytes32 deviceHash_) external view returns (address) {
+        return _claimedDevices[deviceHash_];
+    }
+
     function _mint(
-        uint256 amount,
+        uint256 tokenId,
         address holder,
         bytes32 deviceHash
     ) private {
-        _mint(holder, amount);
-        emit Claimed(holder, deviceHash, amount);
+        _mint(holder, tokenId);
+        _claimedDevices[deviceHash] = holder;
+        emit Claimed(holder, deviceHash, tokenId);
     }
 
     function _claim(
-        uint256 amount,
+        uint256 tokenId,
         address holder,
         uint256 lat,
         uint256 long,
@@ -47,11 +59,11 @@ abstract contract MetapebbleVerifiedToken is ERC20 {
             "invalid signature"
         );
 
-        _mint(amount, holder, deviceHash);
+        _mint(tokenId, holder, deviceHash);
     }
 
     function _claim(
-        uint256 amount,
+        uint256 tokenId,
         address holder,
         bytes32 deviceHash,
         uint256 deviceTimestamp,
@@ -63,6 +75,6 @@ abstract contract MetapebbleVerifiedToken is ERC20 {
             "invalid signature"
         );
 
-        _mint(amount, holder, deviceHash);
+        _mint(tokenId, holder, deviceHash);
     }
 }

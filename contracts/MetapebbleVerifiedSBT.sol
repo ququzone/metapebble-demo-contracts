@@ -6,11 +6,7 @@ import "./MetapebbleVerifiedNFT.sol";
 import "./interface/IMetapebbleDataVerifier.sol";
 
 abstract contract MetapebbleVerifiedSBT is MetapebbleVerifiedNFT {
-    constructor(
-        address _verifier,
-        string memory _name,
-        string memory _symbol
-    ) MetapebbleVerifiedNFT(_verifier, _name, _symbol) {}
+    constructor(address _verifier) MetapebbleVerifiedNFT(_verifier) {}
 
     function _beforeTokenTransfer(
         address from,

@@ -2,10 +2,10 @@ module.exports = async ({ ethers, getNamedAccounts, deployments }) => {
     const { deploy, get, log } = deployments
     const { deployer } = await getNamedAccounts()
 
-    const verifier = await get('MetapebbleDataVerifier');
+    const verifier = await get("MetapebbleDataVerifier")
 
     log(`Deploying PebbleFixedLocationNFT...`)
-    let deployResult = await deploy('PebbleFixedLocationNFT', {
+    let deployResult = await deploy("PebbleFixedLocationNFT", {
         from: deployer,
         log: true,
         args: [
@@ -14,7 +14,7 @@ module.exports = async ({ ethers, getNamedAccounts, deployments }) => {
             1000, // 1km
             verifier.address,
             "ShangHai Pebble NFT",
-            "SHP"
+            "SHP",
         ],
         deterministicDeployment: false,
     })
@@ -25,14 +25,10 @@ module.exports = async ({ ethers, getNamedAccounts, deployments }) => {
     }
 
     log(`Deploying PebbleOwnSBT...`)
-    deployResult = await deploy('PebbleOwnSBT', {
+    deployResult = await deploy("PebbleOwnSBT", {
         from: deployer,
         log: true,
-        args: [
-            verifier.address,
-            "Own Pebble SBT",
-            "OPT"
-        ],
+        args: [verifier.address, "Own Pebble SBT", "OPT"],
         deterministicDeployment: false,
     })
     if (deployResult.newlyDeployed) {
@@ -40,7 +36,20 @@ module.exports = async ({ ethers, getNamedAccounts, deployments }) => {
             `contract PebbleOwnSBT deployed at ${deployResult.address} using ${deployResult.receipt.gasUsed} gas`
         )
     }
+
+    log(`Deploying PebbleDailyToken...`)
+    deployResult = await deploy("PebbleDailyToken", {
+        from: deployer,
+        log: true,
+        args: [verifier.address, "Pebble Daily Tiken", "PDT"],
+        deterministicDeployment: false,
+    })
+    if (deployResult.newlyDeployed) {
+        log(
+            `contract PebbleDailyToken deployed at ${deployResult.address} using ${deployResult.receipt.gasUsed} gas`
+        )
+    }
 }
 
-module.exports.dependencies = [`verifier`];
+module.exports.dependencies = [`verifier`]
 module.exports.tags = [`all`, `example`]

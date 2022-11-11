@@ -10,7 +10,11 @@ abstract contract MetapebbleVerifiedNFT is Ownable, ERC721 {
 
     IMetapebbleDataVerifier public verifier;
 
-    constructor(address _verifier, string memory _name, string memory _symbol) ERC721(_name, _symbol) {
+    constructor(
+        address _verifier,
+        string memory _name,
+        string memory _symbol
+    ) ERC721(_name, _symbol) {
         verifier = IMetapebbleDataVerifier(_verifier);
         _uri = "";
     }
@@ -20,7 +24,7 @@ abstract contract MetapebbleVerifiedNFT is Ownable, ERC721 {
     uint256 internal _tokenId;
     string private _uri;
 
-    function _baseURI() internal override view virtual returns (string memory) {
+    function _baseURI() internal view virtual override returns (string memory) {
         return _uri;
     }
 
@@ -78,13 +82,7 @@ abstract contract MetapebbleVerifiedNFT is Ownable, ERC721 {
         bytes memory signature
     ) internal virtual {
         require(
-            verifier.verifyDevice(
-                holder,
-                deviceHash,
-                deviceTimestamp,
-                verifyTimestamp,
-                signature
-            ),
+            verifier.verifyDevice(holder, deviceHash, deviceTimestamp, verifyTimestamp, signature),
             "invalid signature"
         );
 

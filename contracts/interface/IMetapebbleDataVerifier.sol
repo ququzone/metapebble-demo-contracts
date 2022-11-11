@@ -16,7 +16,7 @@ interface IMetapebbleDataVerifier {
         uint256 verifyTimestamp,
         bytes memory signature
     ) external view returns (bool);
-    
+
     function verifyDevice(
         address holder,
         bytes32 deviceHash,

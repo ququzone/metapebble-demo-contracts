@@ -14,7 +14,7 @@ contract MetapebbleDataVerifier is Initializable, Ownable2StepUpgradeable, IMeta
 
     address public override validator;
 
-    function initialize(address _validator) initializer public {
+    function initialize(address _validator) public initializer {
         __Ownable2Step_init();
         validator = _validator;
         emit ValidatorChanged(address(0), validator);
@@ -34,7 +34,17 @@ contract MetapebbleDataVerifier is Initializable, Ownable2StepUpgradeable, IMeta
         uint256 verifyTimestamp,
         bytes memory signature
     ) external view override returns (bool) {
-        bytes32 hash = keccak256(abi.encodePacked(holder, lat, long, distance, deviceHash, deviceTimestamp, verifyTimestamp));
+        bytes32 hash = keccak256(
+            abi.encodePacked(
+                holder,
+                lat,
+                long,
+                distance,
+                deviceHash,
+                deviceTimestamp,
+                verifyTimestamp
+            )
+        );
         return verify(hash, signature);
     }
 
@@ -45,7 +55,9 @@ contract MetapebbleDataVerifier is Initializable, Ownable2StepUpgradeable, IMeta
         uint256 verifyTimestamp,
         bytes memory signature
     ) external view override returns (bool) {
-        bytes32 hash = keccak256(abi.encodePacked(holder, deviceHash, deviceTimestamp, verifyTimestamp));
+        bytes32 hash = keccak256(
+            abi.encodePacked(holder, deviceHash, deviceTimestamp, verifyTimestamp)
+        );
         return verify(hash, signature);
     }
 

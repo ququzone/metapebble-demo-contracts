@@ -1,15 +1,12 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
+import "./MetapebbleVerifiedNFT.sol";
+import "./interface/IMetapebbleDataVerifier.sol";
 
-contract SoulBoundToken is ERC721 {
-    constructor(string memory name_, string memory symbol_) ERC721(name_, symbol_) {
-    }
-
-    function burn(uint256 tokenId) external {
-        require(ownerOf(tokenId) == msg.sender, "No burn privilege");
-        _burn(tokenId);
+abstract contract MetapebbleVerifiedSBT is MetapebbleVerifiedNFT {
+    constructor(address _verifier, string memory _name, string memory _symbol) MetapebbleVerifiedNFT(_verifier, _name, _symbol) {
     }
 
     function _beforeTokenTransfer(

@@ -51,7 +51,7 @@ abstract contract MetapebbleVerifiedNFT is Ownable, ERC721 {
         bytes32 deviceHash,
         uint256 deviceTimestamp,
         uint256 verifyTimestamp,
-        uint8 v, bytes32 r, bytes32 s
+        bytes memory signature
     ) internal virtual {
         require(
             verifier.verifyLocationDistance(
@@ -62,7 +62,7 @@ abstract contract MetapebbleVerifiedNFT is Ownable, ERC721 {
                 deviceHash,
                 deviceTimestamp,
                 verifyTimestamp,
-                v, r, s
+                signature
             ),
             "invalid signature"
         );
@@ -75,7 +75,7 @@ abstract contract MetapebbleVerifiedNFT is Ownable, ERC721 {
         bytes32 deviceHash,
         uint256 deviceTimestamp,
         uint256 verifyTimestamp,
-        uint8 v, bytes32 r, bytes32 s
+        bytes memory signature
     ) internal virtual {
         require(
             verifier.verifyDevice(
@@ -83,7 +83,7 @@ abstract contract MetapebbleVerifiedNFT is Ownable, ERC721 {
                 deviceHash,
                 deviceTimestamp,
                 verifyTimestamp,
-                v, r, s
+                signature
             ),
             "invalid signature"
         );

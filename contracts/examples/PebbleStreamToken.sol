@@ -63,7 +63,7 @@ contract StreamToken is Ownable, ReentrancyGuard, ERC20 {
         );
     }
 
-    function _claim(address user_, uint256 value_, uint8 v_, bytes32 r_, bytes32 s_) internal {
+    function _claim(address user_, uint256 value_, bytes memory signature) internal {
         uint256 _date = currentPeriod();
         uint256 _claimedAmount = _claimed[user_][_date];
         require(_claimedAmount < value_, "already claimed");
@@ -72,18 +72,18 @@ contract StreamToken is Ownable, ReentrancyGuard, ERC20 {
             DOMAIN_SEPARATOR,
             hashClaim(user_, _date, value_)
         ));
-        require(verifier.verify(digest, v_, r_, s_), "invalid signature");
+        require(verifier.verify(digest, signature), "invalid signature");
 
         _claimed[user_][_date] = value_;
         _mint(user_, value_ - _claimedAmount);
         emit Claimed(user_, _date, value_ - _claimedAmount);
     }
 
-    function claim(address user_, uint256 value_, uint8 v_, bytes32 r_, bytes32 s_) external nonReentrant {
-        _claim(user_, value_, v_, r_, s_);
+    function claim(address user_, uint256 value_, bytes memory signature) external nonReentrant {
+        _claim(user_, value_, signature);
     }
 
-    function claim(uint256 value_, uint8 v_, bytes32 r_, bytes32 s_) external nonReentrant {
-        _claim(msg.sender, value_, v_, r_, s_);
+    function claim(uint256 value_, bytes memory signature) external nonReentrant {
+        _claim(msg.sender, value_, signature);
     }
 }

@@ -4,7 +4,7 @@ pragma solidity ^0.8.0;
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "../interface/IMetapebbleDataVerifier.sol";
 
-abstract contract MetapebbleVerifiedNFT is ERC721 {
+contract MetapebbleVerifiedNFT is ERC721 {
     event Claimed(address indexed holder, bytes32 indexed deviceHash, uint256 indexed tokenId);
 
     IMetapebbleDataVerifier public verifier;

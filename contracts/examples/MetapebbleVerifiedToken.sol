@@ -4,7 +4,7 @@ pragma solidity ^0.8.0;
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "../interface/IMetapebbleDataVerifier.sol";
 
-abstract contract MetapebbleVerifiedToken is ERC20 {
+contract MetapebbleVerifiedToken is ERC20 {
     event Claimed(address indexed holder, bytes32 indexed deviceHash, uint256 amount);
 
     IMetapebbleDataVerifier public verifier;

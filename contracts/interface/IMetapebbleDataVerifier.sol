@@ -2,26 +2,22 @@
 pragma solidity ^0.8.0;
 
 interface IMetapebbleDataVerifier {
-    function validator() external view returns (address);
+    function isValidator(address account) external view returns (bool);
 
     function verify(bytes32 digest, bytes memory signature) external view returns (bool);
 
-    function verifyLocationDistance(
+    function generateLocationDistanceDigest(
         address holder,
         uint256 lat,
         uint256 long,
         uint256 distance,
         bytes32 deviceHash,
-        uint256 deviceTimestamp,
-        uint256 verifyTimestamp,
-        bytes memory signature
-    ) external view returns (bool);
+        uint256 deviceTimestamp
+    ) external view returns (bytes32);
 
-    function verifyDevice(
+    function generateDeviceDigest(
         address holder,
         bytes32 deviceHash,
-        uint256 deviceTimestamp,
-        uint256 verifyTimestamp,
-        bytes memory signature
-    ) external view returns (bool);
+        uint256 deviceTimestamp
+    ) external view returns (bytes32);
 }

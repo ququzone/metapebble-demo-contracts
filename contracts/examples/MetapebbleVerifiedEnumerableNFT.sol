@@ -1,15 +1,19 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
-import "./interface/IMetapebbleDataVerifier.sol";
+import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
+import "../interface/IMetapebbleDataVerifier.sol";
 
-abstract contract MetapebbleVerifiedNFT is ERC721 {
+contract MetapebbleVerifiedEnumerableNFT is ERC721Enumerable {
     event Claimed(address indexed holder, bytes32 indexed deviceHash, uint256 indexed tokenId);
 
     IMetapebbleDataVerifier public verifier;
 
-    constructor(address _verifier) {
+    constructor(
+        address _verifier,
+        string memory _name,
+        string memory _symbol
+    ) ERC721(_name, _symbol) {
         verifier = IMetapebbleDataVerifier(_verifier);
     }
 
@@ -42,22 +46,17 @@ abstract contract MetapebbleVerifiedNFT is ERC721 {
         uint256 distance,
         bytes32 deviceHash,
         uint256 deviceTimestamp,
-        uint256 verifyTimestamp,
         bytes memory signature
     ) internal virtual {
-        require(
-            verifier.verifyLocationDistance(
-                holder,
-                lat,
-                long,
-                distance,
-                deviceHash,
-                deviceTimestamp,
-                verifyTimestamp,
-                signature
-            ),
-            "invalid signature"
+        bytes32 digest = verifier.generateLocationDistanceDigest(
+            holder,
+            lat,
+            long,
+            distance,
+            deviceHash,
+            deviceTimestamp
         );
+        require(verifier.verify(digest, signature), "invalid signature");
 
         _mint(tokenId, holder, deviceHash);
     }
@@ -67,13 +66,10 @@ abstract contract MetapebbleVerifiedNFT is ERC721 {
         address holder,
         bytes32 deviceHash,
         uint256 deviceTimestamp,
-        uint256 verifyTimestamp,
         bytes memory signature
     ) internal virtual {
-        require(
-            verifier.verifyDevice(holder, deviceHash, deviceTimestamp, verifyTimestamp, signature),
-            "invalid signature"
-        );
+        bytes32 digest = verifier.generateDeviceDigest(holder, deviceHash, deviceTimestamp);
+        require(verifier.verify(digest, signature), "invalid signature");
 
         _mint(tokenId, holder, deviceHash);
     }

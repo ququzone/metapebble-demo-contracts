@@ -3,11 +3,11 @@ import { expect } from "chai"
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers"
 
 import { MetapebbleDataVerifier } from "../typechain/contracts/MetapebbleDataVerifier"
-import { PebbleFixedLocationNFT } from "../typechain/contracts/examples/PebbleFixedLocationNFT"
+import { PebbleMultipleLocationNFT } from "../typechain/contracts/examples/PebbleMultipleLocationNFT"
 
-describe("PebbleFixedLocationNFT", function () {
+describe("PebbleMultipleLocationNFT", function () {
     let verifier: MetapebbleDataVerifier
-    let token: PebbleFixedLocationNFT
+    let token: PebbleMultipleLocationNFT
     let owner: SignerWithAddress
     let signer: SignerWithAddress
     let holder: SignerWithAddress
@@ -19,15 +19,15 @@ describe("PebbleFixedLocationNFT", function () {
         verifier = (await verifierFactory.connect(owner).deploy()) as MetapebbleDataVerifier
         await verifier.initialize([signer.address])
 
-        const facory = await ethers.getContractFactory("PebbleFixedLocationNFT")
+        const facory = await ethers.getContractFactory("PebbleMultipleLocationNFT")
         token = (await facory.connect(owner).deploy(
-            120520000, // lat
-            30400000, // long
-            1000, // 1km
+            [120520000], // lat
+            [30400000], // long
+            [1000], // 1km
             verifier.address,
             "ShangHai Pebble NFT",
             "SHP"
-        )) as PebbleFixedLocationNFT
+        )) as PebbleMultipleLocationNFT
     })
 
     it("check basic info", async function () {

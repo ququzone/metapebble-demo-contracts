@@ -17,7 +17,7 @@ describe("PebbleOwnSBT", function () {
 
         const verifierFactory = await ethers.getContractFactory("MetapebbleDataVerifier")
         verifier = (await verifierFactory.connect(owner).deploy()) as MetapebbleDataVerifier
-        await verifier.initialize(signer.address)
+        await verifier.initialize([signer.address])
 
         const facory = await ethers.getContractFactory("PebbleOwnSBT")
         token = (await facory
@@ -33,23 +33,23 @@ describe("PebbleOwnSBT", function () {
     it("check claim", async function () {
         const deviceHash = ethers.utils.keccak256(ethers.utils.toUtf8Bytes("12345"))
         const hash = ethers.utils.solidityKeccak256(
-            ["address", "bytes32", "uint256", "uint256"],
-            [holder.address, deviceHash, 1668131000, 1668132000]
+            ["address", "bytes32", "uint256"],
+            [holder.address, deviceHash, 1668131000]
         )
         const messageHashBinary = ethers.utils.arrayify(hash)
 
         const signature = await signer.signMessage(messageHashBinary)
 
         await expect(
-            token.connect(owner).claim(deviceHash, 1668131000, 1668132000, signature)
+            token.connect(owner).claim(deviceHash, 1668131000, signature)
         ).to.be.revertedWith("invalid signature")
 
         expect(0).to.equal(await token.balanceOf(holder.address))
-        await token.connect(holder).claim(deviceHash, 1668131000, 1668132000, signature)
+        await token.connect(holder).claim(deviceHash, 1668131000, signature)
         expect(1).to.equal(await token.balanceOf(holder.address))
 
         await expect(
-            token.connect(holder).claim(deviceHash, 1668131000, 1668132000, signature)
+            token.connect(holder).claim(deviceHash, 1668131000, signature)
         ).to.be.revertedWith("already claimed")
 
         await expect(

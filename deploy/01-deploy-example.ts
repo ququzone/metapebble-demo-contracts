@@ -49,6 +49,26 @@ module.exports = async ({ ethers, getNamedAccounts, deployments }) => {
             `contract PebbleDailyToken deployed at ${deployResult.address} using ${deployResult.receipt.gasUsed} gas`
         )
     }
+
+    log(`Deploying PebbleMultipleLocationNFT...`)
+    deployResult = await deploy("PebbleMultipleLocationNFT", {
+        from: deployer,
+        log: true,
+        args: [
+            [120520000], // lat
+            [30400000], // long
+            [1000], // 1km
+            verifier.address,
+            "ShangHai Pebble NFT",
+            "SHP",
+        ],
+        deterministicDeployment: false,
+    })
+    if (deployResult.newlyDeployed) {
+        log(
+            `contract PebbleMultipleLocationNFT deployed at ${deployResult.address} using ${deployResult.receipt.gasUsed} gas`
+        )
+    }
 }
 
 module.exports.dependencies = [`verifier`]

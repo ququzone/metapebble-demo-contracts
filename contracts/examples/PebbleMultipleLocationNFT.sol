@@ -48,10 +48,11 @@ contract PebbleMultipleLocationNFT is Ownable, ReentrancyGuard, MetapebbleVerifi
         uint256 _lat,
         uint256 _long,
         uint256 _maxDistance
-    ) onlyOwner external {
+    ) external onlyOwner {
         require(_maxDistance > 0, "invalid max distance");
         bytes32 hash = keccak256(abi.encodePacked(_lat, _long));
         require(places[hash].maxDistance == 0, "repeated place");
+
         places[hash] = Place({lat: _lat, long: _long, maxDistance: _maxDistance});
         placesHash.push(hash);
     }

@@ -61,10 +61,8 @@ describe("PebbleMultipleLocationNFT", function () {
     })
 
     it("check add place", async function () {
-        await expect(
-            token.addPlace(120520000, 30400000, 100))
-        .to.be.revertedWith("repeated place")
-    
+        await expect(token.addPlace(120520000, 30400000, 100)).to.be.revertedWith("repeated place")
+
         expect(1).to.equal(await token.palceCount())
 
         await token.addPlace(121520000, 30400000, 10000)

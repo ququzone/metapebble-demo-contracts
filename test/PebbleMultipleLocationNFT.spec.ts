@@ -59,4 +59,21 @@ describe("PebbleMultipleLocationNFT", function () {
             token.connect(holder).claim(120520000, 30400000, 100, deviceHash, 1668131000, signature)
         ).to.be.revertedWith("already claimed")
     })
+
+    it("check add place", async function () {
+        await expect(
+            token.addPlace(120520000, 30400000, 100))
+        .to.be.revertedWith("repeated place")
+    
+        expect(1).to.equal(await token.palceCount())
+
+        await token.addPlace(121520000, 30400000, 10000)
+        expect(2).to.equal(await token.palceCount())
+
+        const place1Hash = await token.placesHash(1)
+        const place1 = await token.places(place1Hash)
+        expect(121520000).to.equals(place1.lat.toNumber())
+        expect(30400000).to.equals(place1.long.toNumber())
+        expect(10000).to.equals(place1.maxDistance.toNumber())
+    })
 })

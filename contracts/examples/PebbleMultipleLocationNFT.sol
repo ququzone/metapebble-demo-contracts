@@ -7,8 +7,8 @@ import "./MetapebbleVerifiedEnumerableNFT.sol";
 
 contract PebbleMultipleLocationNFT is Ownable, ReentrancyGuard, MetapebbleVerifiedEnumerableNFT {
     struct Place {
-        uint256 lat;
-        uint256 long;
+        int256 lat;
+        int256 long;
         uint256 maxDistance;
     }
 
@@ -18,8 +18,8 @@ contract PebbleMultipleLocationNFT is Ownable, ReentrancyGuard, MetapebbleVerifi
     uint256 private tokenId;
 
     constructor(
-        uint256[] memory _lats,
-        uint256[] memory _longs,
+        int256[] memory _lats,
+        int256[] memory _longs,
         uint256[] memory _maxDistances,
         address _verifier,
         string memory _name,
@@ -45,8 +45,8 @@ contract PebbleMultipleLocationNFT is Ownable, ReentrancyGuard, MetapebbleVerifi
     }
 
     function addPlace(
-        uint256 _lat,
-        uint256 _long,
+        int256 _lat,
+        int256 _long,
         uint256 _maxDistance
     ) external onlyOwner {
         require(_maxDistance > 0, "invalid max distance");
@@ -58,8 +58,8 @@ contract PebbleMultipleLocationNFT is Ownable, ReentrancyGuard, MetapebbleVerifi
     }
 
     function claim(
-        uint256 lat_,
-        uint256 long_,
+        int256 lat_,
+        int256 long_,
         uint256 distance_,
         bytes32 deviceHash_,
         uint256 deviceTimestamp_,

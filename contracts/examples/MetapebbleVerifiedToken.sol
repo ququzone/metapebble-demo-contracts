@@ -29,8 +29,8 @@ contract MetapebbleVerifiedToken is ERC20 {
     function _claim(
         uint256 amount,
         address holder,
-        uint256 lat,
-        uint256 long,
+        int256 lat,
+        int256 long,
         uint256 distance,
         bytes32 deviceHash,
         uint256 deviceTimestamp,

@@ -5,15 +5,15 @@ import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import "./MetapebbleVerifiedEnumerableNFT.sol";
 
 contract PebbleFixedLocationNFT is ReentrancyGuard, MetapebbleVerifiedEnumerableNFT {
-    uint256 private lat;
-    uint256 private long;
+    int256 private lat;
+    int256 private long;
     uint256 private maxDistance;
 
     uint256 private tokenId;
 
     constructor(
-        uint256 _lat,
-        uint256 _long,
+        int256 _lat,
+        int256 _long,
         uint256 _maxDistance,
         address _verifier,
         string memory _name,
@@ -25,8 +25,8 @@ contract PebbleFixedLocationNFT is ReentrancyGuard, MetapebbleVerifiedEnumerable
     }
 
     function claim(
-        uint256 lat_,
-        uint256 long_,
+        int256 lat_,
+        int256 long_,
         uint256 distance_,
         bytes32 deviceHash_,
         uint256 deviceTimestamp_,

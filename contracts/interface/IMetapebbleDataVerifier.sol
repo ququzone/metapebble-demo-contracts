@@ -8,8 +8,8 @@ interface IMetapebbleDataVerifier {
 
     function generateLocationDistanceDigest(
         address holder,
-        uint256 lat,
-        uint256 long,
+        int256 lat,
+        int256 long,
         uint256 distance,
         bytes32 deviceHash,
         uint256 deviceTimestamp

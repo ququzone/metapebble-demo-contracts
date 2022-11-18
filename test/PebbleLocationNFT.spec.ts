@@ -38,7 +38,7 @@ describe("PebbleFixedLocationNFT", function () {
     it("check claim", async function () {
         const deviceHash = ethers.utils.keccak256(ethers.utils.toUtf8Bytes("12345"))
         const hash = ethers.utils.solidityKeccak256(
-            ["address", "uint256", "uint256", "uint256", "bytes32", "uint256"],
+            ["address", "int256", "int256", "uint256", "bytes32", "uint256"],
             [holder.address, 120520000, 30400000, 100, deviceHash, 1668131000]
         )
         const messageHashBinary = ethers.utils.arrayify(hash)

@@ -36,27 +36,28 @@ describe("PebbleMultipleLocationNFT", function () {
     })
 
     it("check claim", async function () {
+        const deviceTimestamp = Math.floor(new Date().valueOf() / 1000);
         const deviceHash = ethers.utils.keccak256(ethers.utils.toUtf8Bytes("12345"))
         const hash = ethers.utils.solidityKeccak256(
             ["address", "int256", "int256", "uint256", "bytes32", "uint256"],
-            [holder.address, 120520000, 30400000, 100, deviceHash, 1668131000]
+            [holder.address, 120520000, 30400000, 100, deviceHash, deviceTimestamp]
         )
         const messageHashBinary = ethers.utils.arrayify(hash)
 
         const signature = await signer.signMessage(messageHashBinary)
 
         await expect(
-            token.connect(owner).claim(120520000, 30400000, 100, deviceHash, 1668131000, signature)
+            token.connect(owner).claim(120520000, 30400000, 100, deviceHash, deviceTimestamp, signature)
         ).to.be.revertedWith("invalid signature")
 
         expect(0).to.equal(await token.balanceOf(holder.address))
         await token
             .connect(holder)
-            .claim(120520000, 30400000, 100, deviceHash, 1668131000, signature)
+            .claim(120520000, 30400000, 100, deviceHash, deviceTimestamp, signature)
         expect(1).to.equal(await token.balanceOf(holder.address))
 
         await expect(
-            token.connect(holder).claim(120520000, 30400000, 100, deviceHash, 1668131000, signature)
+            token.connect(holder).claim(120520000, 30400000, 100, deviceHash, deviceTimestamp, signature)
         ).to.be.revertedWith("already claimed")
     })
 

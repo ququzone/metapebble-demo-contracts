@@ -12,6 +12,7 @@ contract PebbleMultipleLocationNFT is Ownable, ReentrancyGuard, MetapebbleVerifi
         uint256 maxDistance;
     }
 
+    uint256 private constant ONE_DAY = 1 days;
     bytes32[] public placesHash;
     mapping(bytes32 => Place) public places;
 
@@ -67,6 +68,10 @@ contract PebbleMultipleLocationNFT is Ownable, ReentrancyGuard, MetapebbleVerifi
     ) external nonReentrant {
         // fixed location verify logic
         require(_claimedDevices[deviceHash_] == address(0), "already claimed");
+        require(
+            deviceTimestamp_ >= block.timestamp - ONE_DAY && deviceTimestamp_ < block.timestamp,
+            "invalid device timestamp"
+        );
         Place memory place = places[keccak256(abi.encodePacked(lat_, long_))];
         require(place.maxDistance > 0, "place not exists");
         require(distance_ <= place.maxDistance, "invalid location");

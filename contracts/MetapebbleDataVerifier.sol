@@ -49,18 +49,32 @@ contract MetapebbleDataVerifier is Initializable, Ownable2StepUpgradeable, IMeta
         int256 long,
         uint256 distance,
         bytes32 deviceHash,
-        uint256 deviceTimestamp
+        uint256 startTimestamp,
+        uint256 endTimestamp
     ) external pure override returns (bytes32) {
+        require(endTimestamp >= startTimestamp, "invalid timestamp");
         return
-            keccak256(abi.encodePacked(holder, lat, long, distance, deviceHash, deviceTimestamp));
+            keccak256(
+                abi.encodePacked(
+                    holder,
+                    lat,
+                    long,
+                    distance,
+                    deviceHash,
+                    startTimestamp,
+                    endTimestamp
+                )
+            );
     }
 
     function generateDeviceDigest(
         address holder,
         bytes32 deviceHash,
-        uint256 deviceTimestamp
+        uint256 startTimestamp,
+        uint256 endTimestamp
     ) external pure override returns (bytes32) {
-        return keccak256(abi.encodePacked(holder, deviceHash, deviceTimestamp));
+        require(endTimestamp >= startTimestamp, "invalid timestamp");
+        return keccak256(abi.encodePacked(holder, deviceHash, startTimestamp, endTimestamp));
     }
 
     function isValidator(address _account) public view returns (bool) {

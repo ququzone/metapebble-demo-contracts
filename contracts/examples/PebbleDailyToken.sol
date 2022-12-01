@@ -33,7 +33,8 @@ contract PebbleDailyToken is ReentrancyGuard, MetapebbleVerifiedToken {
 
     function claim(
         bytes32 deviceHash_,
-        uint256 deviceTimestamp_,
+        uint256 startTimestamp_,
+        uint256 endTimestamp_,
         bytes memory signature
     ) external nonReentrant {
         address holder = msg.sender;
@@ -44,6 +45,6 @@ contract PebbleDailyToken is ReentrancyGuard, MetapebbleVerifiedToken {
         require(_claimedAmount < 0, "already claimed");
 
         _claimed[holder][_date] = TOKEN_PER_DAY;
-        _claim(TOKEN_PER_DAY, msg.sender, deviceHash_, deviceTimestamp_, signature);
+        _claim(TOKEN_PER_DAY, msg.sender, deviceHash_, startTimestamp_, endTimestamp_, signature);
     }
 }

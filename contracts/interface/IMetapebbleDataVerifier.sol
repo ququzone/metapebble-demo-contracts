@@ -12,12 +12,14 @@ interface IMetapebbleDataVerifier {
         int256 long,
         uint256 distance,
         bytes32 deviceHash,
-        uint256 deviceTimestamp
+        uint256 startTimestamp,
+        uint256 endTimestamp
     ) external view returns (bytes32);
 
     function generateDeviceDigest(
         address holder,
         bytes32 deviceHash,
-        uint256 deviceTimestamp
+        uint256 startTimestamp,
+        uint256 endTimestamp
     ) external view returns (bytes32);
 }

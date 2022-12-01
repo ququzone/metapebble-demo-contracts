@@ -45,7 +45,8 @@ contract MetapebbleVerifiedEnumerableNFT is ERC721Enumerable {
         int256 long,
         uint256 distance,
         bytes32 deviceHash,
-        uint256 deviceTimestamp,
+        uint256 startTimestamp,
+        uint256 endTimestamp,
         bytes memory signature
     ) internal virtual {
         bytes32 digest = verifier.generateLocationDistanceDigest(
@@ -54,7 +55,8 @@ contract MetapebbleVerifiedEnumerableNFT is ERC721Enumerable {
             long,
             distance,
             deviceHash,
-            deviceTimestamp
+            startTimestamp,
+            endTimestamp
         );
         require(verifier.verify(digest, signature), "invalid signature");
 
@@ -65,10 +67,16 @@ contract MetapebbleVerifiedEnumerableNFT is ERC721Enumerable {
         uint256 tokenId,
         address holder,
         bytes32 deviceHash,
-        uint256 deviceTimestamp,
+        uint256 startTimestamp,
+        uint256 endTimestamp,
         bytes memory signature
     ) internal virtual {
-        bytes32 digest = verifier.generateDeviceDigest(holder, deviceHash, deviceTimestamp);
+        bytes32 digest = verifier.generateDeviceDigest(
+            holder,
+            deviceHash,
+            startTimestamp,
+            endTimestamp
+        );
         require(verifier.verify(digest, signature), "invalid signature");
 
         _mint(tokenId, holder, deviceHash);

@@ -51,6 +51,7 @@ module.exports = async ({ ethers, getNamedAccounts, deployments }) => {
     }
 
     log(`Deploying PebbleMultipleLocationNFT...`)
+    const startTimestamp = Math.floor(new Date().valueOf() / 1000)
     deployResult = await deploy("PebbleMultipleLocationNFT", {
         from: deployer,
         log: true,
@@ -58,9 +59,11 @@ module.exports = async ({ ethers, getNamedAccounts, deployments }) => {
             [120520000], // lat
             [30400000], // long
             [1000], // 1km
+            [startTimestamp],
+            [startTimestamp + 1000],
             verifier.address,
-            "ShangHai Pebble NFT",
-            "SHP",
+            "Multiple Place Pebble NFT",
+            "MPT",
         ],
         deterministicDeployment: false,
     })

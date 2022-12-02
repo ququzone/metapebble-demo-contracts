@@ -23,8 +23,8 @@ describe("PebbleMultipleLocationNFT", function () {
 
         const facory = await ethers.getContractFactory("PebbleMultipleLocationNFT")
         token = (await facory.connect(owner).deploy(
-            [120520000], // lat
             [30400000], // long
+            [120520000], // lat
             [1000], // 1km
             [startTimestamp],
             [startTimestamp + 1000],
@@ -45,8 +45,8 @@ describe("PebbleMultipleLocationNFT", function () {
             ["address", "int256", "int256", "uint256", "bytes32", "uint256", "uint256"],
             [
                 holder.address,
-                120520000,
                 30400000,
+                120520000,
                 1000,
                 deviceHash,
                 startTimestamp,
@@ -61,8 +61,8 @@ describe("PebbleMultipleLocationNFT", function () {
             token
                 .connect(owner)
                 .claim(
-                    120520000,
                     30400000,
+                    120520000,
                     1000,
                     deviceHash,
                     startTimestamp,
@@ -75,8 +75,8 @@ describe("PebbleMultipleLocationNFT", function () {
         await token
             .connect(holder)
             .claim(
-                120520000,
                 30400000,
+                120520000,
                 1000,
                 deviceHash,
                 startTimestamp,
@@ -89,8 +89,8 @@ describe("PebbleMultipleLocationNFT", function () {
             token
                 .connect(holder)
                 .claim(
-                    120520000,
                     30400000,
+                    120520000,
                     1000,
                     deviceHash,
                     startTimestamp,
@@ -102,18 +102,25 @@ describe("PebbleMultipleLocationNFT", function () {
 
     it("check add place", async function () {
         await expect(
-            token.addPlace(120520000, 30400000, 1000, startTimestamp, startTimestamp + 1000)
+            token.addPlace(30400000, 120520000, 1000, startTimestamp, startTimestamp + 1000)
         ).to.be.revertedWith("repeated place")
+
+        await expect(
+            token.addPlace(30400, 120520000, 1000, startTimestamp, startTimestamp + 1000)
+        ).to.be.revertedWith("invalid lat")
+        await expect(
+            token.addPlace(30400000, 1222, 1000, startTimestamp, startTimestamp + 1000)
+        ).to.be.revertedWith("invalid long")
 
         expect(1).to.equal(await token.palceCount())
 
-        await token.addPlace(121520000, 30400000, 10000, startTimestamp, startTimestamp + 1000)
+        await token.addPlace(30400000, 121520000, 10000, startTimestamp, startTimestamp + 1000)
         expect(2).to.equal(await token.palceCount())
 
         const place1Hash = await token.placesHash(1)
         const place1 = await token.places(place1Hash)
-        expect(121520000).to.equals(place1.lat.toNumber())
-        expect(30400000).to.equals(place1.long.toNumber())
+        expect(121520000).to.equals(place1.long.toNumber())
+        expect(30400000).to.equals(place1.lat.toNumber())
         expect(10000).to.equals(place1.maxDistance.toNumber())
     })
 })

@@ -38,9 +38,9 @@ contract PebbleMultipleLocationNFT is Ownable, ReentrancyGuard, MetapebbleVerifi
         for (uint256 i = 0; i < _lats.length; i++) {
             require(_maxDistances[i] > 0, "invalid max distance");
             int256 lat = _lats[i] / PRECISION;
-            require(lat >= -90 && lat <= 90, "invalid lat");
+            require(lat != 0 && lat >= -90 && lat <= 90, "invalid lat");
             int256 long = _longs[i] / PRECISION;
-            require(long >= -180 && long <= 180, "invalid long");
+            require(long != 0 && long >= -180 && long <= 180, "invalid long");
             require(
                 _endTimestamps[i] > _startTimestamps[i] && _endTimestamps[i] > block.timestamp,
                 "invalid timestamp"
@@ -84,9 +84,9 @@ contract PebbleMultipleLocationNFT is Ownable, ReentrancyGuard, MetapebbleVerifi
             "invalid timestamp"
         );
         int256 lat = _lat / PRECISION;
-        require(lat >= -90 && lat <= 90, "invalid lat");
+        require(lat != 0 && lat >= -90 && lat <= 90, "invalid lat");
         int256 long = _long / PRECISION;
-        require(long >= -180 && long <= 180, "invalid long");
+        require(long != 0 && long >= -180 && long <= 180, "invalid long");
         bytes32 hash = keccak256(
             abi.encodePacked(_lat, _long, _maxDistance, _startTimestamp, _endTimestamp)
         );

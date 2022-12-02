@@ -106,10 +106,10 @@ describe("PebbleMultipleLocationNFT", function () {
         ).to.be.revertedWith("repeated place")
 
         await expect(
-            token.addPlace(30400, 120520000, 1000, startTimestamp, startTimestamp + 1000)
+            token.addPlace(304000000, 120520000, 1000, startTimestamp, startTimestamp + 1000)
         ).to.be.revertedWith("invalid lat")
         await expect(
-            token.addPlace(30400000, 1222, 1000, startTimestamp, startTimestamp + 1000)
+            token.addPlace(30400000, 1205000000, 1000, startTimestamp, startTimestamp + 1000)
         ).to.be.revertedWith("invalid long")
 
         expect(1).to.equal(await token.palceCount())

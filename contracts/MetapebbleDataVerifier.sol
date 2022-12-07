@@ -112,6 +112,11 @@ contract MetapebbleDataVerifier is Initializable, Ownable2StepUpgradeable, IMeta
         emit ValidatorRemoved(_validator);
     }
 
+    function changeVerifyFeeSelector(address _verifyFeeSelector) external onlyOwner {
+        require(_verifyFeeSelector != address(0), "invalid selector");
+        verifyFeeSelector = IVerifyFeeSelector(_verifyFeeSelector);
+    }
+
     function withdrawFee(address payable to, uint256 amount) external onlyOwner {
         require(address(this).balance >= amount, "insufficient balance");
         to.transfer(amount);

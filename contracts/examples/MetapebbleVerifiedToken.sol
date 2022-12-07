@@ -35,7 +35,8 @@ contract MetapebbleVerifiedToken is ERC20 {
         bytes32 deviceHash,
         uint256 startTimestamp,
         uint256 endTimestamp,
-        bytes memory signature
+        bytes memory signature,
+        uint256 value
     ) internal virtual {
         bytes32 digest = verifier.generateLocationDistanceDigest(
             holder,
@@ -46,7 +47,7 @@ contract MetapebbleVerifiedToken is ERC20 {
             startTimestamp,
             endTimestamp
         );
-        require(verifier.verify(digest, signature), "invalid signature");
+        require(verifier.verify{value: value}(digest, signature), "invalid signature");
 
         _mint(amount, holder, deviceHash);
     }
@@ -57,7 +58,8 @@ contract MetapebbleVerifiedToken is ERC20 {
         bytes32 deviceHash,
         uint256 startTimestamp,
         uint256 endTimestamp,
-        bytes memory signature
+        bytes memory signature,
+        uint256 value
     ) internal virtual {
         bytes32 digest = verifier.generateDeviceDigest(
             holder,
@@ -65,7 +67,7 @@ contract MetapebbleVerifiedToken is ERC20 {
             startTimestamp,
             endTimestamp
         );
-        require(verifier.verify(digest, signature), "invalid signature");
+        require(verifier.verify{value: value}(digest, signature), "invalid signature");
 
         _mint(amount, holder, deviceHash);
     }

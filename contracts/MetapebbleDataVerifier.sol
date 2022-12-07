@@ -6,6 +6,8 @@ import {Initializable} from "@openzeppelin/contracts/proxy/utils/Initializable.s
 import {ECDSA} from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import {Ownable2StepUpgradeable} from "./utils/Ownable2StepUpgradeable.sol";
 import {IMetapebbleDataVerifier} from "./interface/IMetapebbleDataVerifier.sol";
+import {IVerifyFeeSelector} from "./interface/IVerifyFeeSelector.sol";
+import {IVerifyFeeManager} from "./interface/IVerifyFeeManager.sol";
 
 contract MetapebbleDataVerifier is Initializable, Ownable2StepUpgradeable, IMetapebbleDataVerifier {
     using ECDSA for bytes32;
@@ -17,7 +19,12 @@ contract MetapebbleDataVerifier is Initializable, Ownable2StepUpgradeable, IMeta
 
     mapping(address => address) validators;
 
-    function initialize(address[] memory _validators) public initializer {
+    IVerifyFeeSelector verifyFeeSelector;
+
+    function initialize(address[] memory _validators, address _verifyFeeSelector)
+        public
+        initializer
+    {
         __Ownable2Step_init();
 
         address currentValidator = SENTINEL_VALIDATOR;
@@ -36,9 +43,12 @@ contract MetapebbleDataVerifier is Initializable, Ownable2StepUpgradeable, IMeta
             currentValidator = validator;
         }
         validators[currentValidator] = SENTINEL_VALIDATOR;
+        verifyFeeSelector = IVerifyFeeSelector(_verifyFeeSelector);
     }
 
-    function verify(bytes32 hash, bytes memory signature) public view override returns (bool) {
+    function verify(bytes32 hash, bytes memory signature) public payable override returns (bool) {
+        address feeManager = verifyFeeSelector.fetchVerifyFeeManager(msg.sender);
+        require(IVerifyFeeManager(feeManager).verify(msg.sender, msg.value), "invalid fee");
         address signer = hash.toEthSignedMessageHash().recover(signature);
         return isValidator(signer);
     }
@@ -100,5 +110,10 @@ contract MetapebbleDataVerifier is Initializable, Ownable2StepUpgradeable, IMeta
         validators[_prevValidator] = validators[_validator];
         validators[_validator] = address(0);
         emit ValidatorRemoved(_validator);
+    }
+
+    function withdrawFee(address payable to, uint256 amount) external onlyOwner {
+        require(address(this).balance >= amount, "insufficient balance");
+        to.transfer(amount);
     }
 }

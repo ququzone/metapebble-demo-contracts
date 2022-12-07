@@ -18,11 +18,19 @@ contract PebbleOwnSBT is ReentrancyGuard, MetapebbleVerifiedSBT {
         uint256 startTimestamp_,
         uint256 endTimestamp_,
         bytes memory signature
-    ) external nonReentrant {
+    ) external payable nonReentrant {
         // own pebble verify logic
         require(_claimedDevices[deviceHash_] == address(0), "already claimed");
 
-        _claim(tokenId, msg.sender, deviceHash_, startTimestamp_, endTimestamp_, signature);
+        _claim(
+            tokenId,
+            msg.sender,
+            deviceHash_,
+            startTimestamp_,
+            endTimestamp_,
+            signature,
+            msg.value
+        );
         tokenId++;
     }
 }

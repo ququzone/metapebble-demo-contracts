@@ -105,7 +105,7 @@ contract PebbleMultipleLocationNFT is Ownable, ReentrancyGuard, MetapebbleVerifi
         uint256 startTimestamp_,
         uint256 endTimestamp_,
         bytes memory signature
-    ) external nonReentrant {
+    ) external payable nonReentrant {
         // fixed location verify logic
         require(_claimedDevices[deviceHash_] == address(0), "already claimed");
         Place memory place = places[
@@ -122,7 +122,8 @@ contract PebbleMultipleLocationNFT is Ownable, ReentrancyGuard, MetapebbleVerifi
             deviceHash_,
             startTimestamp_,
             endTimestamp_,
-            signature
+            signature,
+            msg.value
         );
         tokenId++;
     }

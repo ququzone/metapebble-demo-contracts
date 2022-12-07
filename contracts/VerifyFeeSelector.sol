@@ -36,7 +36,7 @@ contract VerifyFeeSelector is IVerifyFeeSelector, Ownable {
     }
 
     function removeFeeManager(address project) external onlyOwner {
-        require(feeManagerForProject[project] != address(0), "Project has no transfer manager");
+        require(feeManagerForProject[project] != address(0), "Project has no fee manager");
 
         // Set it to the address(0)
         feeManagerForProject[project] = address(0);

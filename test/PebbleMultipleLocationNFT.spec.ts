@@ -18,7 +18,7 @@ describe("PebbleMultipleLocationNFT", function () {
         ;[owner, signer, holder] = await ethers.getSigners()
 
         const feeManagerFactory = await ethers.getContractFactory("GeneralFeeManager")
-        const feeManager = await feeManagerFactory.deploy(1000);
+        const feeManager = await feeManagerFactory.deploy(1000)
         const selectorFactory = await ethers.getContractFactory("VerifyFeeSelector")
         const selector = await selectorFactory.deploy(feeManager.address)
 
@@ -73,7 +73,7 @@ describe("PebbleMultipleLocationNFT", function () {
                     startTimestamp,
                     startTimestamp + 1000,
                     signature,
-                    {value: 1000}
+                    { value: 1000 }
                 )
         ).to.be.revertedWith("invalid signature")
 
@@ -88,7 +88,7 @@ describe("PebbleMultipleLocationNFT", function () {
                 startTimestamp,
                 startTimestamp + 1000,
                 signature,
-                {value: 1000}
+                { value: 1000 }
             )
         expect(1).to.equal(await token.balanceOf(holder.address))
 
@@ -103,7 +103,7 @@ describe("PebbleMultipleLocationNFT", function () {
                     startTimestamp,
                     startTimestamp + 1000,
                     signature,
-                    {value: 1000}
+                    { value: 1000 }
                 )
         ).to.be.revertedWith("already claimed")
     })

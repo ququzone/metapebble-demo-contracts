@@ -10,7 +10,7 @@ contract VerifyFeeSelector is IVerifyFeeSelector, Ownable {
 
     address public immutable DEFAULT_FEE_MANAGER;
 
-    mapping(address => address) public feeManagerForProject;
+    mapping(address => address) feeManagerForProject;
 
     constructor(address _defaultFeeManager) {
         DEFAULT_FEE_MANAGER = _defaultFeeManager;

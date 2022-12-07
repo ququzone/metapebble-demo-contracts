@@ -19,7 +19,7 @@ contract MetapebbleDataVerifier is Initializable, Ownable2StepUpgradeable, IMeta
 
     mapping(address => address) validators;
 
-    IVerifyFeeSelector public verifyFeeSelector;
+    address public override verifyFeeSelector;
 
     function initialize(address[] memory _validators, address _verifyFeeSelector)
         public
@@ -43,11 +43,13 @@ contract MetapebbleDataVerifier is Initializable, Ownable2StepUpgradeable, IMeta
             currentValidator = validator;
         }
         validators[currentValidator] = SENTINEL_VALIDATOR;
-        verifyFeeSelector = IVerifyFeeSelector(_verifyFeeSelector);
+        verifyFeeSelector = _verifyFeeSelector;
     }
 
     function verify(bytes32 hash, bytes memory signature) public payable override returns (bool) {
-        address feeManager = verifyFeeSelector.fetchVerifyFeeManager(msg.sender);
+        address feeManager = IVerifyFeeSelector(verifyFeeSelector).fetchVerifyFeeManager(
+            msg.sender
+        );
         require(IVerifyFeeManager(feeManager).verify(msg.sender, msg.value), "invalid fee");
         address signer = hash.toEthSignedMessageHash().recover(signature);
         return isValidator(signer);
@@ -114,7 +116,7 @@ contract MetapebbleDataVerifier is Initializable, Ownable2StepUpgradeable, IMeta
 
     function changeVerifyFeeSelector(address _verifyFeeSelector) external onlyOwner {
         require(_verifyFeeSelector != address(0), "invalid selector");
-        verifyFeeSelector = IVerifyFeeSelector(_verifyFeeSelector);
+        verifyFeeSelector = _verifyFeeSelector;
     }
 
     function withdrawFee(address payable to, uint256 amount) external onlyOwner {

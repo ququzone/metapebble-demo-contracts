@@ -22,4 +22,6 @@ interface IMetapebbleDataVerifier {
         uint256 startTimestamp,
         uint256 endTimestamp
     ) external view returns (bytes32);
+
+    function verifyFeeSelector() external view returns (address);
 }

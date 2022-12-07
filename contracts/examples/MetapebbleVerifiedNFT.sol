@@ -3,6 +3,8 @@ pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "../interface/IMetapebbleDataVerifier.sol";
+import "../interface/IVerifyFeeSelector.sol";
+import "../interface/IVerifyFeeManager.sol";
 
 contract MetapebbleVerifiedNFT is ERC721 {
     event Claimed(address indexed holder, bytes32 indexed deviceHash, uint256 indexed tokenId);
@@ -82,5 +84,14 @@ contract MetapebbleVerifiedNFT is ERC721 {
         require(verifier.verify{value: value}(digest, signature), "invalid signature");
 
         _mint(tokenId, holder, deviceHash);
+    }
+
+    function claimFee() external view returns (uint256) {
+        return
+            IVerifyFeeManager(
+                IVerifyFeeSelector(verifier.verifyFeeSelector()).fetchVerifyFeeManager(
+                    address(this)
+                )
+            ).fee(address(this));
     }
 }

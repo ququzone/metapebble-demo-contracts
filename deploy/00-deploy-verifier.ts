@@ -6,7 +6,7 @@ module.exports = async ({ ethers, getNamedAccounts, deployments }) => {
     let deployResult = await deploy("GeneralFeeManager", {
         from: deployer,
         log: true,
-        args: ['1000000000000000000'],
+        args: ["1000000000000000000"],
         deterministicDeployment: false,
     })
 

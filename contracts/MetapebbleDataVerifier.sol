@@ -19,7 +19,7 @@ contract MetapebbleDataVerifier is Initializable, Ownable2StepUpgradeable, IMeta
 
     mapping(address => address) validators;
 
-    IVerifyFeeSelector verifyFeeSelector;
+    IVerifyFeeSelector public verifyFeeSelector;
 
     function initialize(address[] memory _validators, address _verifyFeeSelector)
         public

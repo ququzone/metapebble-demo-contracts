@@ -15,9 +15,14 @@ describe("PebbleOwnSBT", function () {
     before(async function () {
         ;[owner, signer, holder] = await ethers.getSigners()
 
+        const feeManagerFactory = await ethers.getContractFactory("GeneralFeeManager")
+        const feeManager = await feeManagerFactory.deploy(1000);
+        const selectorFactory = await ethers.getContractFactory("VerifyFeeSelector")
+        const selector = await selectorFactory.deploy(feeManager.address)
+
         const verifierFactory = await ethers.getContractFactory("MetapebbleDataVerifier")
         verifier = (await verifierFactory.connect(owner).deploy()) as MetapebbleDataVerifier
-        await verifier.initialize([signer.address])
+        await verifier.initialize([signer.address], selector.address)
 
         const facory = await ethers.getContractFactory("PebbleOwnSBT")
         token = (await facory
@@ -41,15 +46,15 @@ describe("PebbleOwnSBT", function () {
         const signature = await signer.signMessage(messageHashBinary)
 
         await expect(
-            token.connect(owner).claim(deviceHash, 1668131000, 1668133000, signature)
+            token.connect(owner).claim(deviceHash, 1668131000, 1668133000, signature, {value: 1000})
         ).to.be.revertedWith("invalid signature")
 
         expect(0).to.equal(await token.balanceOf(holder.address))
-        await token.connect(holder).claim(deviceHash, 1668131000, 1668133000, signature)
+        await token.connect(holder).claim(deviceHash, 1668131000, 1668133000, signature, {value: 1000})
         expect(1).to.equal(await token.balanceOf(holder.address))
 
         await expect(
-            token.connect(holder).claim(deviceHash, 1668131000, 1668133000, signature)
+            token.connect(holder).claim(deviceHash, 1668131000, 1668133000, signature, {value: 1000})
         ).to.be.revertedWith("already claimed")
 
         await expect(

@@ -25,7 +25,7 @@ module.exports = async ({ ethers, getNamedAccounts, deployments }) => {
             proxyContract: "OpenZeppelinTransparentProxy",
             execute: {
                 methodName: "initialize",
-                args: [["0x8896780a7912829781f70344ab93e589dddb2930"], deployResult.address],
+                args: [["0x0BDf1bc0cdD2E41E62E6BE2F756634FE2b587906"], deployResult.address],
             },
         },
         log: true,

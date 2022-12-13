@@ -29,9 +29,10 @@ contract PebbleFixedLocationNFT is ReentrancyGuard, MetapebbleVerifiedEnumerable
         int256 long_,
         uint256 distance_,
         bytes32 deviceHash_,
-        uint256 deviceTimestamp_,
+        uint256 startTimestamp_,
+        uint256 endTimestamp_,
         bytes memory signature
-    ) external nonReentrant {
+    ) external payable nonReentrant {
         // fixed location verify logic
         require(_claimedDevices[deviceHash_] == address(0), "already claimed");
         require(lat_ == lat && long_ == long && distance_ <= maxDistance, "invalid location");
@@ -43,8 +44,10 @@ contract PebbleFixedLocationNFT is ReentrancyGuard, MetapebbleVerifiedEnumerable
             long_,
             distance_,
             deviceHash_,
-            deviceTimestamp_,
-            signature
+            startTimestamp_,
+            endTimestamp_,
+            signature,
+            msg.value
         );
         tokenId++;
     }

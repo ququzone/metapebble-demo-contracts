@@ -3,6 +3,8 @@ pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "../interface/IMetapebbleDataVerifier.sol";
+import "../interface/IVerifyFeeSelector.sol";
+import "../interface/IVerifyFeeManager.sol";
 
 contract MetapebbleVerifiedToken is ERC20 {
     event Claimed(address indexed holder, bytes32 indexed deviceHash, uint256 amount);
@@ -33,8 +35,10 @@ contract MetapebbleVerifiedToken is ERC20 {
         int256 long,
         uint256 distance,
         bytes32 deviceHash,
-        uint256 deviceTimestamp,
-        bytes memory signature
+        uint256 startTimestamp,
+        uint256 endTimestamp,
+        bytes memory signature,
+        uint256 value
     ) internal virtual {
         bytes32 digest = verifier.generateLocationDistanceDigest(
             holder,
@@ -42,9 +46,10 @@ contract MetapebbleVerifiedToken is ERC20 {
             long,
             distance,
             deviceHash,
-            deviceTimestamp
+            startTimestamp,
+            endTimestamp
         );
-        require(verifier.verify(digest, signature), "invalid signature");
+        require(verifier.verify{value: value}(digest, signature), "invalid signature");
 
         _mint(amount, holder, deviceHash);
     }
@@ -53,12 +58,28 @@ contract MetapebbleVerifiedToken is ERC20 {
         uint256 amount,
         address holder,
         bytes32 deviceHash,
-        uint256 deviceTimestamp,
-        bytes memory signature
+        uint256 startTimestamp,
+        uint256 endTimestamp,
+        bytes memory signature,
+        uint256 value
     ) internal virtual {
-        bytes32 digest = verifier.generateDeviceDigest(holder, deviceHash, deviceTimestamp);
-        require(verifier.verify(digest, signature), "invalid signature");
+        bytes32 digest = verifier.generateDeviceDigest(
+            holder,
+            deviceHash,
+            startTimestamp,
+            endTimestamp
+        );
+        require(verifier.verify{value: value}(digest, signature), "invalid signature");
 
         _mint(amount, holder, deviceHash);
+    }
+
+    function claimFee() external view returns (uint256) {
+        return
+            IVerifyFeeManager(
+                IVerifyFeeSelector(verifier.verifyFeeSelector()).fetchVerifyFeeManager(
+                    address(this)
+                )
+            ).fee(address(this));
     }
 }

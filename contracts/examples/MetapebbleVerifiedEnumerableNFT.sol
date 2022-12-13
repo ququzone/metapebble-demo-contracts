@@ -3,6 +3,8 @@ pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
 import "../interface/IMetapebbleDataVerifier.sol";
+import "../interface/IVerifyFeeSelector.sol";
+import "../interface/IVerifyFeeManager.sol";
 
 contract MetapebbleVerifiedEnumerableNFT is ERC721Enumerable {
     event Claimed(address indexed holder, bytes32 indexed deviceHash, uint256 indexed tokenId);
@@ -45,8 +47,10 @@ contract MetapebbleVerifiedEnumerableNFT is ERC721Enumerable {
         int256 long,
         uint256 distance,
         bytes32 deviceHash,
-        uint256 deviceTimestamp,
-        bytes memory signature
+        uint256 startTimestamp,
+        uint256 endTimestamp,
+        bytes memory signature,
+        uint256 value
     ) internal virtual {
         bytes32 digest = verifier.generateLocationDistanceDigest(
             holder,
@@ -54,9 +58,10 @@ contract MetapebbleVerifiedEnumerableNFT is ERC721Enumerable {
             long,
             distance,
             deviceHash,
-            deviceTimestamp
+            startTimestamp,
+            endTimestamp
         );
-        require(verifier.verify(digest, signature), "invalid signature");
+        require(verifier.verify{value: value}(digest, signature), "invalid signature");
 
         _mint(tokenId, holder, deviceHash);
     }
@@ -65,12 +70,28 @@ contract MetapebbleVerifiedEnumerableNFT is ERC721Enumerable {
         uint256 tokenId,
         address holder,
         bytes32 deviceHash,
-        uint256 deviceTimestamp,
-        bytes memory signature
+        uint256 startTimestamp,
+        uint256 endTimestamp,
+        bytes memory signature,
+        uint256 value
     ) internal virtual {
-        bytes32 digest = verifier.generateDeviceDigest(holder, deviceHash, deviceTimestamp);
-        require(verifier.verify(digest, signature), "invalid signature");
+        bytes32 digest = verifier.generateDeviceDigest(
+            holder,
+            deviceHash,
+            startTimestamp,
+            endTimestamp
+        );
+        require(verifier.verify{value: value}(digest, signature), "invalid signature");
 
         _mint(tokenId, holder, deviceHash);
+    }
+
+    function claimFee() external view returns (uint256) {
+        return
+            IVerifyFeeManager(
+                IVerifyFeeSelector(verifier.verifyFeeSelector()).fetchVerifyFeeManager(
+                    address(this)
+                )
+            ).fee(address(this));
     }
 }

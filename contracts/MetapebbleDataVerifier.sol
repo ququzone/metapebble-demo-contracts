@@ -6,6 +6,8 @@ import {Initializable} from "@openzeppelin/contracts/proxy/utils/Initializable.s
 import {ECDSA} from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import {Ownable2StepUpgradeable} from "./utils/Ownable2StepUpgradeable.sol";
 import {IMetapebbleDataVerifier} from "./interface/IMetapebbleDataVerifier.sol";
+import {IVerifyFeeSelector} from "./interface/IVerifyFeeSelector.sol";
+import {IVerifyFeeManager} from "./interface/IVerifyFeeManager.sol";
 
 contract MetapebbleDataVerifier is Initializable, Ownable2StepUpgradeable, IMetapebbleDataVerifier {
     using ECDSA for bytes32;
@@ -17,7 +19,12 @@ contract MetapebbleDataVerifier is Initializable, Ownable2StepUpgradeable, IMeta
 
     mapping(address => address) validators;
 
-    function initialize(address[] memory _validators) public initializer {
+    address public override verifyFeeSelector;
+
+    function initialize(address[] memory _validators, address _verifyFeeSelector)
+        public
+        initializer
+    {
         __Ownable2Step_init();
 
         address currentValidator = SENTINEL_VALIDATOR;
@@ -36,9 +43,14 @@ contract MetapebbleDataVerifier is Initializable, Ownable2StepUpgradeable, IMeta
             currentValidator = validator;
         }
         validators[currentValidator] = SENTINEL_VALIDATOR;
+        verifyFeeSelector = _verifyFeeSelector;
     }
 
-    function verify(bytes32 hash, bytes memory signature) public view override returns (bool) {
+    function verify(bytes32 hash, bytes memory signature) public payable override returns (bool) {
+        address feeManager = IVerifyFeeSelector(verifyFeeSelector).fetchVerifyFeeManager(
+            msg.sender
+        );
+        require(IVerifyFeeManager(feeManager).verify(msg.sender, msg.value), "invalid fee");
         address signer = hash.toEthSignedMessageHash().recover(signature);
         return isValidator(signer);
     }
@@ -49,18 +61,32 @@ contract MetapebbleDataVerifier is Initializable, Ownable2StepUpgradeable, IMeta
         int256 long,
         uint256 distance,
         bytes32 deviceHash,
-        uint256 deviceTimestamp
+        uint256 startTimestamp,
+        uint256 endTimestamp
     ) external pure override returns (bytes32) {
+        require(endTimestamp >= startTimestamp, "invalid timestamp");
         return
-            keccak256(abi.encodePacked(holder, lat, long, distance, deviceHash, deviceTimestamp));
+            keccak256(
+                abi.encodePacked(
+                    holder,
+                    lat,
+                    long,
+                    distance,
+                    deviceHash,
+                    startTimestamp,
+                    endTimestamp
+                )
+            );
     }
 
     function generateDeviceDigest(
         address holder,
         bytes32 deviceHash,
-        uint256 deviceTimestamp
+        uint256 startTimestamp,
+        uint256 endTimestamp
     ) external pure override returns (bytes32) {
-        return keccak256(abi.encodePacked(holder, deviceHash, deviceTimestamp));
+        require(endTimestamp >= startTimestamp, "invalid timestamp");
+        return keccak256(abi.encodePacked(holder, deviceHash, startTimestamp, endTimestamp));
     }
 
     function isValidator(address _account) public view returns (bool) {
@@ -86,5 +112,15 @@ contract MetapebbleDataVerifier is Initializable, Ownable2StepUpgradeable, IMeta
         validators[_prevValidator] = validators[_validator];
         validators[_validator] = address(0);
         emit ValidatorRemoved(_validator);
+    }
+
+    function changeVerifyFeeSelector(address _verifyFeeSelector) external onlyOwner {
+        require(_verifyFeeSelector != address(0), "invalid selector");
+        verifyFeeSelector = _verifyFeeSelector;
+    }
+
+    function withdrawFee(address payable to, uint256 amount) external onlyOwner {
+        require(address(this).balance >= amount, "insufficient balance");
+        to.transfer(amount);
     }
 }

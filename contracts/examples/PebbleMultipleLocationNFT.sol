@@ -10,6 +10,8 @@ contract PebbleMultipleLocationNFT is Ownable, ReentrancyGuard, MetapebbleVerifi
         int256 lat;
         int256 long;
         uint256 maxDistance;
+        uint256 startTimestamp;
+        uint256 endTimestamp;
     }
 
     uint256 private constant ONE_DAY = 1 days;
@@ -22,6 +24,8 @@ contract PebbleMultipleLocationNFT is Ownable, ReentrancyGuard, MetapebbleVerifi
         int256[] memory _lats,
         int256[] memory _longs,
         uint256[] memory _maxDistances,
+        uint256[] memory _startTimestamps,
+        uint256[] memory _endTimestamps,
         address _verifier,
         string memory _name,
         string memory _symbol
@@ -30,13 +34,32 @@ contract PebbleMultipleLocationNFT is Ownable, ReentrancyGuard, MetapebbleVerifi
             _lats.length == _longs.length && _lats.length == _maxDistances.length,
             "invalid place"
         );
-
         for (uint256 i = 0; i < _lats.length; i++) {
             require(_maxDistances[i] > 0, "invalid max distance");
-            bytes32 hash = keccak256(abi.encodePacked(_lats[i], _longs[i]));
+            require(_lats[i] >= -90000000 && _lats[i] <= 90000000, "invalid lat");
+            require(_longs[i] >= -180000000 && _longs[i] <= 180000000, "invalid long");
+            require(
+                _endTimestamps[i] > _startTimestamps[i] && _endTimestamps[i] > block.timestamp,
+                "invalid timestamp"
+            );
+            bytes32 hash = keccak256(
+                abi.encodePacked(
+                    _lats[i],
+                    _longs[i],
+                    _maxDistances[i],
+                    _startTimestamps[i],
+                    _endTimestamps[i]
+                )
+            );
             require(places[hash].maxDistance == 0, "repeated place");
 
-            places[hash] = Place({lat: _lats[i], long: _longs[i], maxDistance: _maxDistances[i]});
+            places[hash] = Place({
+                lat: _lats[i],
+                long: _longs[i],
+                maxDistance: _maxDistances[i],
+                startTimestamp: _startTimestamps[i],
+                endTimestamp: _endTimestamps[i]
+            });
             placesHash.push(hash);
         }
     }
@@ -48,13 +71,29 @@ contract PebbleMultipleLocationNFT is Ownable, ReentrancyGuard, MetapebbleVerifi
     function addPlace(
         int256 _lat,
         int256 _long,
-        uint256 _maxDistance
+        uint256 _maxDistance,
+        uint256 _startTimestamp,
+        uint256 _endTimestamp
     ) external onlyOwner {
         require(_maxDistance > 0, "invalid max distance");
-        bytes32 hash = keccak256(abi.encodePacked(_lat, _long));
+        require(
+            _endTimestamp > _startTimestamp && _endTimestamp > block.timestamp,
+            "invalid timestamp"
+        );
+        require(_lat >= -90000000 && _lat <= 90000000, "invalid lat");
+        require(_long >= -180000000 && _long <= 180000000, "invalid long");
+        bytes32 hash = keccak256(
+            abi.encodePacked(_lat, _long, _maxDistance, _startTimestamp, _endTimestamp)
+        );
         require(places[hash].maxDistance == 0, "repeated place");
 
-        places[hash] = Place({lat: _lat, long: _long, maxDistance: _maxDistance});
+        places[hash] = Place({
+            lat: _lat,
+            long: _long,
+            maxDistance: _maxDistance,
+            startTimestamp: _startTimestamp,
+            endTimestamp: _endTimestamp
+        });
         placesHash.push(hash);
     }
 
@@ -63,18 +102,16 @@ contract PebbleMultipleLocationNFT is Ownable, ReentrancyGuard, MetapebbleVerifi
         int256 long_,
         uint256 distance_,
         bytes32 deviceHash_,
-        uint256 deviceTimestamp_,
+        uint256 startTimestamp_,
+        uint256 endTimestamp_,
         bytes memory signature
-    ) external nonReentrant {
+    ) external payable nonReentrant {
         // fixed location verify logic
         require(_claimedDevices[deviceHash_] == address(0), "already claimed");
-        require(
-            deviceTimestamp_ >= block.timestamp - ONE_DAY && deviceTimestamp_ < block.timestamp,
-            "invalid device timestamp"
-        );
-        Place memory place = places[keccak256(abi.encodePacked(lat_, long_))];
+        Place memory place = places[
+            keccak256(abi.encodePacked(lat_, long_, distance_, startTimestamp_, endTimestamp_))
+        ];
         require(place.maxDistance > 0, "place not exists");
-        require(distance_ <= place.maxDistance, "invalid location");
 
         _claim(
             tokenId,
@@ -83,8 +120,10 @@ contract PebbleMultipleLocationNFT is Ownable, ReentrancyGuard, MetapebbleVerifi
             long_,
             distance_,
             deviceHash_,
-            deviceTimestamp_,
-            signature
+            startTimestamp_,
+            endTimestamp_,
+            signature,
+            msg.value
         );
         tokenId++;
     }

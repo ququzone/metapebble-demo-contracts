@@ -37,6 +37,7 @@ describe("PebbleMultipleLocationNFT", function () {
             "ShangHai Pebble NFT",
             "SHP"
         )) as PebbleMultipleLocationNFT
+        await token.addPlaceManager(owner.address);
     })
 
     it("check basic info", async function () {

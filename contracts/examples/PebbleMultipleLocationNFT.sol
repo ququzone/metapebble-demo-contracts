@@ -14,11 +14,30 @@ contract PebbleMultipleLocationNFT is Ownable, ReentrancyGuard, MetapebbleVerifi
         uint256 endTimestamp;
     }
 
+    event PlaceManagerAdded(address indexed manager);
+    event PlaceManagerRemoved(address indexed manager);
+    event PlaceAdded(
+        int256 lat,
+        int256 long,
+        uint256 maxDistance,
+        uint256 startTimestamp,
+        uint256 endTimestamp
+    );
+
     uint256 private constant ONE_DAY = 1 days;
     bytes32[] public placesHash;
     mapping(bytes32 => Place) public places;
+    mapping(address => bool) public placeManagers;
 
     uint256 private tokenId;
+
+    modifier onlyPlaceManager() {
+        require(
+            placeManagers[_msgSender()],
+            "PebbleMultipleLocationNFT: caller is not the place manager"
+        );
+        _;
+    }
 
     constructor(
         int256[] memory _lats,
@@ -61,6 +80,13 @@ contract PebbleMultipleLocationNFT is Ownable, ReentrancyGuard, MetapebbleVerifi
                 endTimestamp: _endTimestamps[i]
             });
             placesHash.push(hash);
+            emit PlaceAdded(
+                _lats[i],
+                _longs[i],
+                _maxDistances[i],
+                _startTimestamps[i],
+                _endTimestamps[i]
+            );
         }
     }
 
@@ -74,7 +100,7 @@ contract PebbleMultipleLocationNFT is Ownable, ReentrancyGuard, MetapebbleVerifi
         uint256 _maxDistance,
         uint256 _startTimestamp,
         uint256 _endTimestamp
-    ) external onlyOwner {
+    ) external onlyPlaceManager {
         require(_maxDistance > 0, "invalid max distance");
         require(
             _endTimestamp > _startTimestamp && _endTimestamp > block.timestamp,
@@ -126,5 +152,17 @@ contract PebbleMultipleLocationNFT is Ownable, ReentrancyGuard, MetapebbleVerifi
             msg.value
         );
         tokenId++;
+    }
+
+    function addPlaceManager(address manager) external onlyOwner {
+        require(!placeManagers[manager], "PebbleMultipleLocationNFT: already manager");
+        placeManagers[manager] = true;
+        emit PlaceManagerAdded(manager);
+    }
+
+    function removePlaceManager(address manager) external onlyOwner {
+        require(placeManagers[manager], "PebbleMultipleLocationNFT: not manager");
+        placeManagers[manager] = false;
+        emit PlaceManagerRemoved(manager);
     }
 }

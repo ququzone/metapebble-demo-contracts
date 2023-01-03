@@ -56,14 +56,14 @@ module.exports = async ({ ethers, getNamedAccounts, deployments }) => {
         from: deployer,
         log: true,
         args: [
-            [30400000, 30270960], // lat
-            [120520000, 120041443], // long
-            [1000, 1000], // 1km
-            [startTimestamp, startTimestamp],
-            [startTimestamp + 1000, startTimestamp + 2592000],
+            [], // lat
+            [], // long
+            [], // 1km
+            [], // start time
+            [], // end time
             verifier.address,
-            "Multiple Place Pebble NFT",
-            "MPT",
+            "Metapebble Location NFT",
+            "MLT",
         ],
         deterministicDeployment: false,
     })

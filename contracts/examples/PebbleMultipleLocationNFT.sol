@@ -30,6 +30,7 @@ contract PebbleMultipleLocationNFT is Ownable, ReentrancyGuard, MetapebbleVerifi
     mapping(address => bool) public placeManagers;
 
     uint256 private tokenId;
+    string private baseURI;
 
     modifier onlyPlaceManager() {
         require(
@@ -88,6 +89,7 @@ contract PebbleMultipleLocationNFT is Ownable, ReentrancyGuard, MetapebbleVerifi
                 _endTimestamps[i]
             );
         }
+        baseURI = "";
     }
 
     function palceCount() external view returns (uint256) {
@@ -164,5 +166,13 @@ contract PebbleMultipleLocationNFT is Ownable, ReentrancyGuard, MetapebbleVerifi
         require(placeManagers[manager], "PebbleMultipleLocationNFT: not manager");
         placeManagers[manager] = false;
         emit PlaceManagerRemoved(manager);
+    }
+
+    function tokenURI(uint256) public view virtual override returns (string memory) {
+        return baseURI;
+    }
+
+    function setBaseURI(string memory baseURI_) external onlyOwner {
+        baseURI = baseURI_;
     }
 }

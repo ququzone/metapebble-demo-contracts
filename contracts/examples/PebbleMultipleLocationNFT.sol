@@ -126,6 +126,7 @@ contract PebbleMultipleLocationNFT is Ownable, ReentrancyGuard, MetapebbleVerifi
     }
 
     function claim(
+        address owner_,
         int256 lat_,
         int256 long_,
         uint256 distance_,
@@ -133,7 +134,7 @@ contract PebbleMultipleLocationNFT is Ownable, ReentrancyGuard, MetapebbleVerifi
         uint256 startTimestamp_,
         uint256 endTimestamp_,
         bytes memory signature
-    ) external payable nonReentrant {
+    ) public payable nonReentrant {
         // fixed location verify logic
         require(_claimedDevices[deviceHash_] == address(0), "already claimed");
         Place memory place = places[
@@ -143,7 +144,7 @@ contract PebbleMultipleLocationNFT is Ownable, ReentrancyGuard, MetapebbleVerifi
 
         _claim(
             tokenId,
-            msg.sender,
+            owner_,
             lat_,
             long_,
             distance_,
@@ -154,6 +155,27 @@ contract PebbleMultipleLocationNFT is Ownable, ReentrancyGuard, MetapebbleVerifi
             msg.value
         );
         tokenId++;
+    }
+
+    function claim(
+        int256 lat_,
+        int256 long_,
+        uint256 distance_,
+        bytes32 deviceHash_,
+        uint256 startTimestamp_,
+        uint256 endTimestamp_,
+        bytes memory signature
+    ) external payable nonReentrant {
+        claim(
+            msg.sender,
+            lat_,
+            long_,
+            distance_,
+            deviceHash_,
+            startTimestamp_,
+            endTimestamp_,
+            signature
+        );
     }
 
     function addPlaceManager(address manager) external onlyOwner {

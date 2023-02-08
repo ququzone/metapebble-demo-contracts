@@ -16,9 +16,9 @@ contract MetapebbleVerifiedDrop is Ownable, ReentrancyGuard {
     // deviceHash => claimed address
     mapping(bytes32 => address) internal _claimedDevices;
 
-    int256 private lat;
-    int256 private long;
-    uint256 private maxDistance;
+    int256 public lat;
+    int256 public long;
+    uint256 public maxDistance;
 
     constructor(
         int256 _lat,
@@ -45,6 +45,10 @@ contract MetapebbleVerifiedDrop is Ownable, ReentrancyGuard {
 
     function claimable() external view returns (bool) {
         return address(this).balance >= AMOUNT_PER_DEVICE;
+    }
+
+    function claimed(bytes32 deviceHash_) external view returns (bool) {
+        return _claimedDevices[deviceHash_] != address(0);
     }
 
     function _claim(

@@ -20,7 +20,7 @@ contract VerifyFeeSelector is IVerifyFeeSelector, Ownable {
         address feeManager = feeManagerForProject[project];
 
         if (feeManager == address(0)) {
-            feeManager = DEFAULT_FEE_MANAGER;
+            return DEFAULT_FEE_MANAGER;
         }
 
         return feeManager;

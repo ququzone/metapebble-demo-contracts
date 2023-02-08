@@ -66,7 +66,7 @@ describe("PebbleMultipleLocationNFT", function () {
         await expect(
             token
                 .connect(owner)
-                .claim(
+                ["claim(int256,int256,uint256,bytes32,uint256,uint256,bytes)"](
                     30400000,
                     120520000,
                     1000,
@@ -81,7 +81,7 @@ describe("PebbleMultipleLocationNFT", function () {
         expect(0).to.equal(await token.balanceOf(holder.address))
         await token
             .connect(holder)
-            .claim(
+            ["claim(int256,int256,uint256,bytes32,uint256,uint256,bytes)"](
                 30400000,
                 120520000,
                 1000,
@@ -96,7 +96,7 @@ describe("PebbleMultipleLocationNFT", function () {
         await expect(
             token
                 .connect(holder)
-                .claim(
+                ["claim(int256,int256,uint256,bytes32,uint256,uint256,bytes)"](
                     30400000,
                     120520000,
                     1000,

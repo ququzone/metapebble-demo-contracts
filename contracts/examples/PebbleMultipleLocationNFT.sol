@@ -165,7 +165,7 @@ contract PebbleMultipleLocationNFT is Ownable, ReentrancyGuard, MetapebbleVerifi
         uint256 startTimestamp_,
         uint256 endTimestamp_,
         bytes memory signature
-    ) external payable nonReentrant {
+    ) external payable {
         claim(
             msg.sender,
             lat_,

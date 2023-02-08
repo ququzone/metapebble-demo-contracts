@@ -60,7 +60,7 @@ module.exports = async ({ ethers, getNamedAccounts, deployments }) => {
             [-115169652], // long
             [5000], // 5km
             [startTimestamp], // start time
-            [1673265600], // end time
+            [startTimestamp + 86400], // end time
             verifier.address,
             "CES-W3bstream NFT",
             "CWT",

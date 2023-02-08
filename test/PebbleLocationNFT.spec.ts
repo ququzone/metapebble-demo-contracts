@@ -70,10 +70,10 @@ describe("PebbleFixedLocationNFT", function () {
 
         await verifier
             .connect(owner)
-            .withdrawFee("0x0000000000000000000000000000000000000000", 1000)
+            .withdrawFee("0x8896780a7912829781f70344ab93e589dddb2930", 1000)
         expect(0).to.equal(await ethers.provider.getBalance(verifier.address))
         expect(1000).to.equal(
-            await ethers.provider.getBalance("0x0000000000000000000000000000000000000000")
+            await ethers.provider.getBalance("0x8896780a7912829781f70344ab93e589dddb2930")
         )
 
         await expect(

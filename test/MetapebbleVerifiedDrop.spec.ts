@@ -29,7 +29,7 @@ describe("MetapebbleVerifiedDrop", function () {
             120520000, // lat
             30400000, // long
             1000, // 1km
-            verifier.address, 
+            verifier.address,
             100
         )) as MetapebbleVerifiedDrop
     })
@@ -54,33 +54,52 @@ describe("MetapebbleVerifiedDrop", function () {
         await expect(
             token
                 .connect(owner)
-                ["claim(uint256,bytes32,uint256,uint256,bytes)"]
-                (100, deviceHash, 1668131000, 1668133000, signature, {
-                    value: 1000,
-                })
+                ["claim(uint256,bytes32,uint256,uint256,bytes)"](
+                    100,
+                    deviceHash,
+                    1668131000,
+                    1668133000,
+                    signature,
+                    {
+                        value: 1000,
+                    }
+                )
         ).to.be.revertedWith("no fund")
 
-        await expect(
-            owner.sendTransaction({to: token.address, value: 90})
-        ).to.be.revertedWith("invalid amount")
-        await owner.sendTransaction({to: token.address, value: 1000})
+        await expect(owner.sendTransaction({ to: token.address, value: 90 })).to.be.revertedWith(
+            "invalid amount"
+        )
+        await owner.sendTransaction({ to: token.address, value: 1000 })
 
         await expect(
             token
                 .connect(owner)
-                ["claim(uint256,bytes32,uint256,uint256,bytes)"]
-                (100, deviceHash, 1668131000, 1668133000, signature, {
-                    value: 1000,
-                })
+                ["claim(uint256,bytes32,uint256,uint256,bytes)"](
+                    100,
+                    deviceHash,
+                    1668131000,
+                    1668133000,
+                    signature,
+                    {
+                        value: 1000,
+                    }
+                )
         ).to.be.revertedWith("invalid signature")
 
         expect(holderBalance).to.equal(await ethers.provider.getBalance(holder.address))
         await token
             .connect(owner)
-            ["claim(address,uint256,bytes32,uint256,uint256,bytes)"]
-            (holder.address, 100, deviceHash, 1668131000, 1668133000, signature, {
-                value: 1000,
-            })
+            ["claim(address,uint256,bytes32,uint256,uint256,bytes)"](
+                holder.address,
+                100,
+                deviceHash,
+                1668131000,
+                1668133000,
+                signature,
+                {
+                    value: 1000,
+                }
+            )
         expect(holderBalance.add(100)).to.equal(await ethers.provider.getBalance(holder.address))
 
         expect(1000).to.equal(await ethers.provider.getBalance(verifier.address))
@@ -96,10 +115,16 @@ describe("MetapebbleVerifiedDrop", function () {
         await expect(
             token
                 .connect(holder)
-                ["claim(uint256,bytes32,uint256,uint256,bytes)"]
-                (100, deviceHash, 1668131000, 1668133000, signature, {
-                    value: 1000,
-                })
+                ["claim(uint256,bytes32,uint256,uint256,bytes)"](
+                    100,
+                    deviceHash,
+                    1668131000,
+                    1668133000,
+                    signature,
+                    {
+                        value: 1000,
+                    }
+                )
         ).to.be.revertedWith("already claimed")
     })
 })

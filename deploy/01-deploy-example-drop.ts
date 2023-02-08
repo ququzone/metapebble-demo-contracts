@@ -13,7 +13,7 @@ module.exports = async ({ ethers, getNamedAccounts, deployments }) => {
             30400000, // long
             1000, // 1km
             verifier.address,
-            "1000000000000000000"
+            "1000000000000000000",
         ],
         deterministicDeployment: false,
     })

@@ -85,15 +85,7 @@ contract MetapebbleVerifiedDrop is Ownable, ReentrancyGuard {
         uint256 endTimestamp,
         bytes memory signature
     ) external payable {
-        _claim(
-            holder,
-            distance,
-            deviceHash,
-            startTimestamp,
-            endTimestamp,
-            signature,
-            msg.value
-        );
+        _claim(holder, distance, deviceHash, startTimestamp, endTimestamp, signature, msg.value);
     }
 
     function claim(

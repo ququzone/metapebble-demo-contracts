@@ -19,18 +19,30 @@ contract MetapebbleVerifiedDrop is Ownable, ReentrancyGuard {
     int256 public lat;
     int256 public long;
     uint256 public maxDistance;
+    uint256 public startTimestamp;
+    uint256 public endTimestamp;
 
     constructor(
         int256 _lat,
         int256 _long,
         uint256 _maxDistance,
+        uint256 _startTimestamp,
+        uint256 _endTimestamp,
         address _verifier,
         uint256 _amount
     ) {
         require(_amount > 0, "invalid amount");
+        require(
+            // _startTimestamp > block.timestamp && _endTimestamp > _startTimestamp,
+            _endTimestamp > _startTimestamp,
+            "invalid time range"
+        );
+        require(_maxDistance != 0, "invalid distance");
         lat = _lat;
         long = _long;
         maxDistance = _maxDistance;
+        startTimestamp = _startTimestamp;
+        endTimestamp = _endTimestamp;
         verifier = IMetapebbleDataVerifier(_verifier);
         AMOUNT_PER_DEVICE = _amount;
     }
@@ -55,8 +67,6 @@ contract MetapebbleVerifiedDrop is Ownable, ReentrancyGuard {
         address payable holder,
         uint256 distance,
         bytes32 deviceHash,
-        uint256 startTimestamp,
-        uint256 endTimestamp,
         bytes memory signature,
         uint256 value
     ) internal virtual nonReentrant {
@@ -85,29 +95,17 @@ contract MetapebbleVerifiedDrop is Ownable, ReentrancyGuard {
         address payable holder,
         uint256 distance,
         bytes32 deviceHash,
-        uint256 startTimestamp,
-        uint256 endTimestamp,
         bytes memory signature
     ) external payable {
-        _claim(holder, distance, deviceHash, startTimestamp, endTimestamp, signature, msg.value);
+        _claim(holder, distance, deviceHash, signature, msg.value);
     }
 
     function claim(
         uint256 distance,
         bytes32 deviceHash,
-        uint256 startTimestamp,
-        uint256 endTimestamp,
         bytes memory signature
     ) external payable {
-        _claim(
-            payable(msg.sender),
-            distance,
-            deviceHash,
-            startTimestamp,
-            endTimestamp,
-            signature,
-            msg.value
-        );
+        _claim(payable(msg.sender), distance, deviceHash, signature, msg.value);
     }
 
     function claimFee() public view returns (uint256) {

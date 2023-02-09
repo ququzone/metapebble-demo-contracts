@@ -4,6 +4,9 @@ module.exports = async ({ ethers, getNamedAccounts, deployments }) => {
 
     const verifier = await get("MetapebbleDataVerifier")
 
+    const startTimestamp = Math.floor(new Date().valueOf() / 1000) + 1000
+    const endTimestamp = startTimestamp + 864000
+
     log(`Deploying MetapebbleVerifiedDrop...`)
     let deployResult = await deploy("MetapebbleVerifiedDrop", {
         from: deployer,
@@ -12,6 +15,8 @@ module.exports = async ({ ethers, getNamedAccounts, deployments }) => {
             120520000, // lat
             30400000, // long
             1000, // 1km
+            startTimestamp,
+            endTimestamp,
             verifier.address,
             "1000000000000000000",
         ],

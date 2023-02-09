@@ -12,6 +12,9 @@ describe("MetapebbleVerifiedDrop", function () {
     let signer: SignerWithAddress
     let holder: SignerWithAddress
 
+    const startTimestamp = Math.floor(new Date().valueOf() / 1000) + 1000
+    const endTimestamp = startTimestamp + 1000
+
     before(async function () {
         ;[owner, signer, holder] = await ethers.getSigners()
 
@@ -29,6 +32,8 @@ describe("MetapebbleVerifiedDrop", function () {
             120520000, // lat
             30400000, // long
             1000, // 1km
+            startTimestamp,
+            endTimestamp,
             verifier.address,
             100
         )) as MetapebbleVerifiedDrop
@@ -45,25 +50,16 @@ describe("MetapebbleVerifiedDrop", function () {
         const deviceHash = ethers.utils.keccak256(ethers.utils.toUtf8Bytes("12345"))
         const hash = ethers.utils.solidityKeccak256(
             ["address", "int256", "int256", "uint256", "bytes32", "uint256", "uint256"],
-            [holder.address, 120520000, 30400000, 100, deviceHash, 1668131000, 1668133000]
+            [holder.address, 120520000, 30400000, 100, deviceHash, startTimestamp, endTimestamp]
         )
         const messageHashBinary = ethers.utils.arrayify(hash)
 
         const signature = await signer.signMessage(messageHashBinary)
 
         await expect(
-            token
-                .connect(owner)
-                ["claim(uint256,bytes32,uint256,uint256,bytes)"](
-                    100,
-                    deviceHash,
-                    1668131000,
-                    1668133000,
-                    signature,
-                    {
-                        value: 1000,
-                    }
-                )
+            token.connect(owner)["claim(uint256,bytes32,bytes)"](100, deviceHash, signature, {
+                value: 1000,
+            })
         ).to.be.revertedWith("no fund")
 
         await expect(owner.sendTransaction({ to: token.address, value: 90 })).to.be.revertedWith(
@@ -74,11 +70,9 @@ describe("MetapebbleVerifiedDrop", function () {
         await expect(
             token
                 .connect(owner)
-                ["claim(uint256,bytes32,uint256,uint256,bytes)"](
+                ["claim(uint256,bytes32,bytes)"](
                     100,
-                    deviceHash,
-                    1668131000,
-                    1668133000,
+                    ethers.utils.keccak256(ethers.utils.toUtf8Bytes("123456")),
                     signature,
                     {
                         value: 1000,
@@ -89,17 +83,9 @@ describe("MetapebbleVerifiedDrop", function () {
         expect(holderBalance).to.equal(await ethers.provider.getBalance(holder.address))
         await token
             .connect(owner)
-            ["claim(address,uint256,bytes32,uint256,uint256,bytes)"](
-                holder.address,
-                100,
-                deviceHash,
-                1668131000,
-                1668133000,
-                signature,
-                {
-                    value: 1000,
-                }
-            )
+            ["claim(address,uint256,bytes32,bytes)"](holder.address, 100, deviceHash, signature, {
+                value: 1000,
+            })
         expect(holderBalance.add(100)).to.equal(await ethers.provider.getBalance(holder.address))
 
         expect(1000).to.equal(await ethers.provider.getBalance(verifier.address))
@@ -113,18 +99,9 @@ describe("MetapebbleVerifiedDrop", function () {
         )
 
         await expect(
-            token
-                .connect(holder)
-                ["claim(uint256,bytes32,uint256,uint256,bytes)"](
-                    100,
-                    deviceHash,
-                    1668131000,
-                    1668133000,
-                    signature,
-                    {
-                        value: 1000,
-                    }
-                )
+            token.connect(holder)["claim(uint256,bytes32,bytes)"](100, deviceHash, signature, {
+                value: 1000,
+            })
         ).to.be.revertedWith("already claimed")
     })
 })

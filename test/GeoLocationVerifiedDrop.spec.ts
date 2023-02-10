@@ -2,12 +2,12 @@ import { ethers } from "hardhat"
 import { expect } from "chai"
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers"
 
-import { MetapebbleDataVerifier } from "../typechain/contracts/MetapebbleDataVerifier"
-import { MetapebbleVerifiedDrop } from "../typechain/contracts/examples/MetapebbleVerifiedDrop"
+import { GeoLocationDataVerifier } from "../typechain/contracts/GeoLocationDataVerifier"
+import { GeoLocationVerifiedDrop } from "../typechain/contracts/examples/GeoLocationVerifiedDrop"
 
-describe("MetapebbleVerifiedDrop", function () {
-    let verifier: MetapebbleDataVerifier
-    let token: MetapebbleVerifiedDrop
+describe("GeoLocationVerifiedDrop", function () {
+    let verifier: GeoLocationDataVerifier
+    let token: GeoLocationVerifiedDrop
     let owner: SignerWithAddress
     let signer: SignerWithAddress
     let holder: SignerWithAddress
@@ -23,11 +23,11 @@ describe("MetapebbleVerifiedDrop", function () {
         const selectorFactory = await ethers.getContractFactory("VerifyFeeSelector")
         const selector = await selectorFactory.deploy(feeManager.address)
 
-        const verifierFactory = await ethers.getContractFactory("MetapebbleDataVerifier")
-        verifier = (await verifierFactory.connect(owner).deploy()) as MetapebbleDataVerifier
+        const verifierFactory = await ethers.getContractFactory("GeoLocationDataVerifier")
+        verifier = (await verifierFactory.connect(owner).deploy()) as GeoLocationDataVerifier
         await verifier.initialize([signer.address], selector.address)
 
-        const facory = await ethers.getContractFactory("MetapebbleVerifiedDrop")
+        const facory = await ethers.getContractFactory("GeoLocationVerifiedDrop")
         token = (await facory.connect(owner).deploy(
             120520000, // lat
             30400000, // long
@@ -36,7 +36,7 @@ describe("MetapebbleVerifiedDrop", function () {
             endTimestamp,
             verifier.address,
             100
-        )) as MetapebbleVerifiedDrop
+        )) as GeoLocationVerifiedDrop
     })
 
     it("check basic info", async function () {

@@ -2,12 +2,12 @@ import { ethers } from "hardhat"
 import { expect } from "chai"
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers"
 
-import { MetapebbleDataVerifier } from "../typechain/contracts/MetapebbleDataVerifier"
-import { PebbleFixedLocationNFT } from "../typechain/contracts/examples/PebbleFixedLocationNFT"
+import { GeoLocationDataVerifier } from "../typechain/contracts/GeoLocationDataVerifier"
+import { GeoLocationFixedLocationNFT } from "../typechain/contracts/examples/GeoLocationFixedLocationNFT"
 
-describe("PebbleFixedLocationNFT", function () {
-    let verifier: MetapebbleDataVerifier
-    let token: PebbleFixedLocationNFT
+describe("GeoLocationFixedLocationNFT", function () {
+    let verifier: GeoLocationDataVerifier
+    let token: GeoLocationFixedLocationNFT
     let owner: SignerWithAddress
     let signer: SignerWithAddress
     let holder: SignerWithAddress
@@ -20,23 +20,23 @@ describe("PebbleFixedLocationNFT", function () {
         const selectorFactory = await ethers.getContractFactory("VerifyFeeSelector")
         const selector = await selectorFactory.deploy(feeManager.address)
 
-        const verifierFactory = await ethers.getContractFactory("MetapebbleDataVerifier")
-        verifier = (await verifierFactory.connect(owner).deploy()) as MetapebbleDataVerifier
+        const verifierFactory = await ethers.getContractFactory("GeoLocationDataVerifier")
+        verifier = (await verifierFactory.connect(owner).deploy()) as GeoLocationDataVerifier
         await verifier.initialize([signer.address], selector.address)
 
-        const facory = await ethers.getContractFactory("PebbleFixedLocationNFT")
+        const facory = await ethers.getContractFactory("GeoLocationFixedLocationNFT")
         token = (await facory.connect(owner).deploy(
             120520000, // lat
             30400000, // long
             1000, // 1km
             verifier.address,
-            "ShangHai Pebble NFT",
+            "ShangHai GeoLocation NFT",
             "SHP"
-        )) as PebbleFixedLocationNFT
+        )) as GeoLocationFixedLocationNFT
     })
 
     it("check basic info", async function () {
-        expect("ShangHai Pebble NFT").to.equal(await token.name())
+        expect("ShangHai GeoLocation NFT").to.equal(await token.name())
         expect("SHP").to.equal(await token.symbol())
     })
 

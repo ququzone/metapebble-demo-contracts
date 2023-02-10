@@ -2,12 +2,12 @@ import { ethers } from "hardhat"
 import { expect } from "chai"
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers"
 
-import { MetapebbleDataVerifier } from "../typechain/contracts/MetapebbleDataVerifier"
-import { PebbleOwnSBT } from "../typechain/contracts/examples/PebbleOwnSBT"
+import { GeoLocationDataVerifier } from "../typechain/contracts/GeoLocationDataVerifier"
+import { GeoLocationOwnSBT } from "../typechain/contracts/examples/GeoLocationOwnSBT"
 
-describe("PebbleOwnSBT", function () {
-    let verifier: MetapebbleDataVerifier
-    let token: PebbleOwnSBT
+describe("GeoLocationOwnSBT", function () {
+    let verifier: GeoLocationDataVerifier
+    let token: GeoLocationOwnSBT
     let owner: SignerWithAddress
     let signer: SignerWithAddress
     let holder: SignerWithAddress
@@ -20,18 +20,18 @@ describe("PebbleOwnSBT", function () {
         const selectorFactory = await ethers.getContractFactory("VerifyFeeSelector")
         const selector = await selectorFactory.deploy(feeManager.address)
 
-        const verifierFactory = await ethers.getContractFactory("MetapebbleDataVerifier")
-        verifier = (await verifierFactory.connect(owner).deploy()) as MetapebbleDataVerifier
+        const verifierFactory = await ethers.getContractFactory("GeoLocationDataVerifier")
+        verifier = (await verifierFactory.connect(owner).deploy()) as GeoLocationDataVerifier
         await verifier.initialize([signer.address], selector.address)
 
-        const facory = await ethers.getContractFactory("PebbleOwnSBT")
+        const facory = await ethers.getContractFactory("GeoLocationOwnSBT")
         token = (await facory
             .connect(owner)
-            .deploy(verifier.address, "Own Pebble NFT", "OPT")) as PebbleOwnSBT
+            .deploy(verifier.address, "Own GeoLocation NFT", "OPT")) as GeoLocationOwnSBT
     })
 
     it("check basic info", async function () {
-        expect("Own Pebble NFT").to.equal(await token.name())
+        expect("Own GeoLocation NFT").to.equal(await token.name())
         expect("OPT").to.equal(await token.symbol())
     })
 

@@ -3,9 +3,9 @@ pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
-import "./MetapebbleVerifiedToken.sol";
+import "./GeoLocationVerifiedToken.sol";
 
-contract PebbleDailyToken is ReentrancyGuard, MetapebbleVerifiedToken {
+contract GeoLocationDailyToken is ReentrancyGuard, GeoLocationVerifiedToken {
     // one day
     uint256 public constant CLAIM_PERIOD = 86400;
     uint256 public constant TOKEN_PER_DAY = 1e18;
@@ -17,7 +17,7 @@ contract PebbleDailyToken is ReentrancyGuard, MetapebbleVerifiedToken {
         address _verifier,
         string memory _name,
         string memory _symbol
-    ) MetapebbleVerifiedToken(_verifier, _name, _symbol) {}
+    ) GeoLocationVerifiedToken(_verifier, _name, _symbol) {}
 
     function currentPeriod() public view returns (uint256) {
         return (block.timestamp / CLAIM_PERIOD) * CLAIM_PERIOD;

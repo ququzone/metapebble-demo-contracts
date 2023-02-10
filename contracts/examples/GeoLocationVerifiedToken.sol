@@ -1,47 +1,35 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
-import "../interface/IMetapebbleDataVerifier.sol";
+import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+import "../interface/IGeoLocationDataVerifier.sol";
 import "../interface/IVerifyFeeSelector.sol";
 import "../interface/IVerifyFeeManager.sol";
 
-contract MetapebbleVerifiedNFT is ERC721 {
-    event Claimed(address indexed holder, bytes32 indexed deviceHash, uint256 indexed tokenId);
+contract GeoLocationVerifiedToken is ERC20 {
+    event Claimed(address indexed holder, bytes32 indexed deviceHash, uint256 amount);
 
-    IMetapebbleDataVerifier public verifier;
+    IGeoLocationDataVerifier public verifier;
 
     constructor(
         address _verifier,
         string memory _name,
         string memory _symbol
-    ) ERC721(_name, _symbol) {
-        verifier = IMetapebbleDataVerifier(_verifier);
-    }
-
-    // deviceHash => claimed address
-    mapping(bytes32 => address) internal _claimedDevices;
-
-    function claimed(bytes32 deviceHash_) external view returns (bool) {
-        return _claimedDevices[deviceHash_] != address(0);
-    }
-
-    function claimedUser(bytes32 deviceHash_) external view returns (address) {
-        return _claimedDevices[deviceHash_];
+    ) ERC20(_name, _symbol) {
+        verifier = IGeoLocationDataVerifier(_verifier);
     }
 
     function _mint(
-        uint256 tokenId,
+        uint256 amount,
         address holder,
         bytes32 deviceHash
     ) private {
-        _mint(holder, tokenId);
-        _claimedDevices[deviceHash] = holder;
-        emit Claimed(holder, deviceHash, tokenId);
+        _mint(holder, amount);
+        emit Claimed(holder, deviceHash, amount);
     }
 
     function _claim(
-        uint256 tokenId,
+        uint256 amount,
         address holder,
         int256 lat,
         int256 long,
@@ -63,11 +51,11 @@ contract MetapebbleVerifiedNFT is ERC721 {
         );
         require(verifier.verify{value: value}(digest, signature), "invalid signature");
 
-        _mint(tokenId, holder, deviceHash);
+        _mint(amount, holder, deviceHash);
     }
 
     function _claim(
-        uint256 tokenId,
+        uint256 amount,
         address holder,
         bytes32 deviceHash,
         uint256 startTimestamp,
@@ -83,7 +71,7 @@ contract MetapebbleVerifiedNFT is ERC721 {
         );
         require(verifier.verify{value: value}(digest, signature), "invalid signature");
 
-        _mint(tokenId, holder, deviceHash);
+        _mint(amount, holder, deviceHash);
     }
 
     function claimFee() external view returns (uint256) {

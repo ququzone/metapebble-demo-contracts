@@ -4,15 +4,15 @@ pragma solidity ^0.8.0;
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 
-import "../interface/IMetapebbleDataVerifier.sol";
+import "../interface/IGeoLocationDataVerifier.sol";
 import "../interface/IVerifyFeeSelector.sol";
 import "../interface/IVerifyFeeManager.sol";
 
-contract MetapebbleVerifiedDrop is Ownable, ReentrancyGuard {
+contract GeoLocationVerifiedDrop is Ownable, ReentrancyGuard {
     event Claimed(address indexed holder, bytes32 indexed deviceHash, uint256 amount);
 
     uint256 public AMOUNT_PER_DEVICE;
-    IMetapebbleDataVerifier public verifier;
+    IGeoLocationDataVerifier public verifier;
     // deviceHash => claimed address
     mapping(bytes32 => address) internal _claimedDevices;
 
@@ -43,7 +43,7 @@ contract MetapebbleVerifiedDrop is Ownable, ReentrancyGuard {
         maxDistance = _maxDistance;
         startTimestamp = _startTimestamp;
         endTimestamp = _endTimestamp;
-        verifier = IMetapebbleDataVerifier(_verifier);
+        verifier = IGeoLocationDataVerifier(_verifier);
         AMOUNT_PER_DEVICE = _amount;
     }
 

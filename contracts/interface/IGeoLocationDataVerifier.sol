@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-interface IMetapebbleDataVerifier {
+interface IGeoLocationDataVerifier {
     function isValidator(address account) external view returns (bool);
 
     function verify(bytes32 digest, bytes memory signature) external payable returns (bool);

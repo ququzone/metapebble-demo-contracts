@@ -5,11 +5,15 @@ import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 import {Initializable} from "@openzeppelin/contracts/proxy/utils/Initializable.sol";
 import {ECDSA} from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import {Ownable2StepUpgradeable} from "./utils/Ownable2StepUpgradeable.sol";
-import {IMetapebbleDataVerifier} from "./interface/IMetapebbleDataVerifier.sol";
+import {IGeoLocationDataVerifier} from "./interface/IGeoLocationDataVerifier.sol";
 import {IVerifyFeeSelector} from "./interface/IVerifyFeeSelector.sol";
 import {IVerifyFeeManager} from "./interface/IVerifyFeeManager.sol";
 
-contract MetapebbleDataVerifier is Initializable, Ownable2StepUpgradeable, IMetapebbleDataVerifier {
+contract GeoLocationDataVerifier is
+    Initializable,
+    Ownable2StepUpgradeable,
+    IGeoLocationDataVerifier
+{
     using ECDSA for bytes32;
 
     address internal constant SENTINEL_VALIDATOR = address(0x1);

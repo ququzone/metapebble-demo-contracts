@@ -2,9 +2,9 @@
 pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
-import "./MetapebbleVerifiedEnumerableNFT.sol";
+import "./GeoLocationVerifiedEnumerableNFT.sol";
 
-contract PebbleFixedLocationNFT is ReentrancyGuard, MetapebbleVerifiedEnumerableNFT {
+contract GeoLocationFixedLocationNFT is ReentrancyGuard, GeoLocationVerifiedEnumerableNFT {
     int256 private lat;
     int256 private long;
     uint256 private maxDistance;
@@ -18,7 +18,7 @@ contract PebbleFixedLocationNFT is ReentrancyGuard, MetapebbleVerifiedEnumerable
         address _verifier,
         string memory _name,
         string memory _symbol
-    ) MetapebbleVerifiedEnumerableNFT(_verifier, _name, _symbol) {
+    ) GeoLocationVerifiedEnumerableNFT(_verifier, _name, _symbol) {
         lat = _lat;
         long = _long;
         maxDistance = _maxDistance;

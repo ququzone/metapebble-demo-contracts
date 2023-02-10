@@ -3,9 +3,13 @@ pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
-import "./MetapebbleVerifiedEnumerableNFT.sol";
+import "./GeoLocationVerifiedEnumerableNFT.sol";
 
-contract PebbleMultipleLocationNFT is Ownable, ReentrancyGuard, MetapebbleVerifiedEnumerableNFT {
+contract GeoLocationMultipleLocationNFT is
+    Ownable,
+    ReentrancyGuard,
+    GeoLocationVerifiedEnumerableNFT
+{
     struct Place {
         int256 lat;
         int256 long;
@@ -35,7 +39,7 @@ contract PebbleMultipleLocationNFT is Ownable, ReentrancyGuard, MetapebbleVerifi
     modifier onlyPlaceManager() {
         require(
             placeManagers[_msgSender()],
-            "PebbleMultipleLocationNFT: caller is not the place manager"
+            "GeoLocationMultipleLocationNFT: caller is not the place manager"
         );
         _;
     }
@@ -49,7 +53,7 @@ contract PebbleMultipleLocationNFT is Ownable, ReentrancyGuard, MetapebbleVerifi
         address _verifier,
         string memory _name,
         string memory _symbol
-    ) MetapebbleVerifiedEnumerableNFT(_verifier, _name, _symbol) {
+    ) GeoLocationVerifiedEnumerableNFT(_verifier, _name, _symbol) {
         require(
             _lats.length == _longs.length && _lats.length == _maxDistances.length,
             "invalid place"
@@ -179,13 +183,13 @@ contract PebbleMultipleLocationNFT is Ownable, ReentrancyGuard, MetapebbleVerifi
     }
 
     function addPlaceManager(address manager) external onlyOwner {
-        require(!placeManagers[manager], "PebbleMultipleLocationNFT: already manager");
+        require(!placeManagers[manager], "GeoLocationMultipleLocationNFT: already manager");
         placeManagers[manager] = true;
         emit PlaceManagerAdded(manager);
     }
 
     function removePlaceManager(address manager) external onlyOwner {
-        require(placeManagers[manager], "PebbleMultipleLocationNFT: not manager");
+        require(placeManagers[manager], "GeoLocationMultipleLocationNFT: not manager");
         placeManagers[manager] = false;
         emit PlaceManagerRemoved(manager);
     }

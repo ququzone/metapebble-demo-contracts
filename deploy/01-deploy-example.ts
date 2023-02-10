@@ -2,10 +2,10 @@ module.exports = async ({ ethers, getNamedAccounts, deployments }) => {
     const { deploy, get, log } = deployments
     const { deployer } = await getNamedAccounts()
 
-    const verifier = await get("MetapebbleDataVerifier")
+    const verifier = await get("GeoLocationDataVerifier")
 
-    // log(`Deploying PebbleFixedLocationNFT...`)
-    // let deployResult = await deploy("PebbleFixedLocationNFT", {
+    // log(`Deploying GeoLocationFixedLocationNFT...`)
+    // let deployResult = await deploy("GeoLocationFixedLocationNFT", {
     //     from: deployer,
     //     log: true,
     //     args: [
@@ -13,46 +13,46 @@ module.exports = async ({ ethers, getNamedAccounts, deployments }) => {
     //         30400000, // long
     //         1000, // 1km
     //         verifier.address,
-    //         "ShangHai Pebble NFT",
+    //         "ShangHai GeoLocation NFT",
     //         "SHP",
     //     ],
     //     deterministicDeployment: false,
     // })
     // if (deployResult.newlyDeployed) {
     //     log(
-    //         `contract PebbleFixedLocationNFT deployed at ${deployResult.address} using ${deployResult.receipt.gasUsed} gas`
+    //         `contract GeoLocationFixedLocationNFT deployed at ${deployResult.address} using ${deployResult.receipt.gasUsed} gas`
     //     )
     // }
 
-    // log(`Deploying PebbleOwnSBT...`)
-    // deployResult = await deploy("PebbleOwnSBT", {
+    // log(`Deploying GeoLocationOwnSBT...`)
+    // deployResult = await deploy("GeoLocationOwnSBT", {
     //     from: deployer,
     //     log: true,
-    //     args: [verifier.address, "Own Pebble SBT", "OPT"],
+    //     args: [verifier.address, "Own GeoLocation SBT", "OPT"],
     //     deterministicDeployment: false,
     // })
     // if (deployResult.newlyDeployed) {
     //     log(
-    //         `contract PebbleOwnSBT deployed at ${deployResult.address} using ${deployResult.receipt.gasUsed} gas`
+    //         `contract GeoLocationOwnSBT deployed at ${deployResult.address} using ${deployResult.receipt.gasUsed} gas`
     //     )
     // }
 
-    // log(`Deploying PebbleDailyToken...`)
-    // deployResult = await deploy("PebbleDailyToken", {
+    // log(`Deploying GeoLocationDailyToken...`)
+    // deployResult = await deploy("GeoLocationDailyToken", {
     //     from: deployer,
     //     log: true,
-    //     args: [verifier.address, "Pebble Daily Tiken", "PDT"],
+    //     args: [verifier.address, "GeoLocation Daily Tiken", "PDT"],
     //     deterministicDeployment: false,
     // })
     // if (deployResult.newlyDeployed) {
     //     log(
-    //         `contract PebbleDailyToken deployed at ${deployResult.address} using ${deployResult.receipt.gasUsed} gas`
+    //         `contract GeoLocationDailyToken deployed at ${deployResult.address} using ${deployResult.receipt.gasUsed} gas`
     //     )
     // }
 
-    log(`Deploying PebbleMultipleLocationNFT...`)
+    log(`Deploying GeoLocationMultipleLocationNFT...`)
     const startTimestamp = Math.floor(new Date().valueOf() / 1000)
-    const deployResult = await deploy("PebbleMultipleLocationNFT", {
+    const deployResult = await deploy("GeoLocationMultipleLocationNFT", {
         from: deployer,
         log: true,
         args: [
@@ -69,7 +69,7 @@ module.exports = async ({ ethers, getNamedAccounts, deployments }) => {
     })
     if (deployResult.newlyDeployed) {
         log(
-            `contract PebbleMultipleLocationNFT deployed at ${deployResult.address} using ${deployResult.receipt.gasUsed} gas`
+            `contract GeoLocationMultipleLocationNFT deployed at ${deployResult.address} using ${deployResult.receipt.gasUsed} gas`
         )
     }
 }

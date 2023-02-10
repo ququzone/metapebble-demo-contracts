@@ -2,21 +2,21 @@
 pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
-import "../interface/IMetapebbleDataVerifier.sol";
+import "../interface/IGeoLocationDataVerifier.sol";
 import "../interface/IVerifyFeeSelector.sol";
 import "../interface/IVerifyFeeManager.sol";
 
-contract MetapebbleVerifiedEnumerableNFT is ERC721Enumerable {
+contract GeoLocationVerifiedEnumerableNFT is ERC721Enumerable {
     event Claimed(address indexed holder, bytes32 indexed deviceHash, uint256 indexed tokenId);
 
-    IMetapebbleDataVerifier public verifier;
+    IGeoLocationDataVerifier public verifier;
 
     constructor(
         address _verifier,
         string memory _name,
         string memory _symbol
     ) ERC721(_name, _symbol) {
-        verifier = IMetapebbleDataVerifier(_verifier);
+        verifier = IGeoLocationDataVerifier(_verifier);
     }
 
     // deviceHash => claimed address

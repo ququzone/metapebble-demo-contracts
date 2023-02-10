@@ -2,13 +2,13 @@ module.exports = async ({ ethers, getNamedAccounts, deployments }) => {
     const { deploy, get, log } = deployments
     const { deployer } = await getNamedAccounts()
 
-    const verifier = await get("MetapebbleDataVerifier")
+    const verifier = await get("GeoLocationDataVerifier")
 
     const startTimestamp = Math.floor(new Date().valueOf() / 1000) + 1000
     const endTimestamp = startTimestamp + 864000
 
-    log(`Deploying MetapebbleVerifiedDrop...`)
-    let deployResult = await deploy("MetapebbleVerifiedDrop", {
+    log(`Deploying GeoLocationVerifiedDrop...`)
+    let deployResult = await deploy("GeoLocationVerifiedDrop", {
         from: deployer,
         log: true,
         args: [
@@ -24,7 +24,7 @@ module.exports = async ({ ethers, getNamedAccounts, deployments }) => {
     })
     if (deployResult.newlyDeployed) {
         log(
-            `contract MetapebbleVerifiedDrop deployed at ${deployResult.address} using ${deployResult.receipt.gasUsed} gas`
+            `contract GeoLocationVerifiedDrop deployed at ${deployResult.address} using ${deployResult.receipt.gasUsed} gas`
         )
     }
 }

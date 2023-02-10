@@ -2,15 +2,14 @@
 pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
-import "../interface/IMetapebbleDataVerifier.sol";
-import "./MetapebbleVerifiedNFT.sol";
+import "./GeoLocationVerifiedNFT.sol";
 
-contract MetapebbleVerifiedSBT is MetapebbleVerifiedNFT {
+contract GeoLocationVerifiedSBT is GeoLocationVerifiedNFT {
     constructor(
         address _verifier,
         string memory _name,
         string memory _symbol
-    ) MetapebbleVerifiedNFT(_verifier, _name, _symbol) {}
+    ) GeoLocationVerifiedNFT(_verifier, _name, _symbol) {}
 
     function _beforeTokenTransfer(
         address from,

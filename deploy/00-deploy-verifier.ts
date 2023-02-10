@@ -18,8 +18,8 @@ module.exports = async ({ ethers, getNamedAccounts, deployments }) => {
         deterministicDeployment: false,
     })
 
-    log(`Deploying MetapebbleDataVerifier...`)
-    deployResult = await deploy("MetapebbleDataVerifier", {
+    log(`Deploying GeoLocationDataVerifier...`)
+    deployResult = await deploy("GeoLocationDataVerifier", {
         from: deployer,
         proxy: {
             proxyContract: "OpenZeppelinTransparentProxy",
@@ -33,7 +33,7 @@ module.exports = async ({ ethers, getNamedAccounts, deployments }) => {
     })
     if (deployResult.newlyDeployed) {
         log(
-            `contract MetapebbleDataVerifier deployed at ${deployResult.address} using ${deployResult.receipt.gasUsed} gas`
+            `contract GeoLocationDataVerifier deployed at ${deployResult.address} using ${deployResult.receipt.gasUsed} gas`
         )
     }
 }

@@ -6,8 +6,6 @@ import "@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
 import "@openzeppelin/contracts/utils/Strings.sol";
 
 contract OpenStreetMapNFT is ERC1155, Ownable {
-    mapping(uint256 => bool) private _tokenIds;
-
     constructor() ERC1155("https://metapebble-nft-demo.onrender.com/api/nft/") {
     }
 
